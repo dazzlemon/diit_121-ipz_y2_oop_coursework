@@ -3,13 +3,13 @@ TELEGRAM BOT
 """
 
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 
 class Bot:
     """
     TELEGRAM BOT
     """
-    def __init__(self, token, commands, default_handler=None):
+    def __init__(self, token, commands, default_handler=None, button_handler=None):
         self._updater = Updater(
             token=token,
             use_context=True
@@ -29,10 +29,15 @@ class Bot:
             )
             self._dispatcher.add_handler(handler)
 
+        if not button_handler is None:
+            handler = CallbackQueryHandler(button_handler)
+            self._dispatcher.add_handler(handler)
+
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.DEBUG
         )
+
 
     def run(self):
         """START UPDATING BOT"""
