@@ -3,7 +3,7 @@ MAIN
 """
 
 from bot import Bot, Command
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from buttons import menu, button
 
 commands = []
 
@@ -35,42 +35,11 @@ commands.append(Command(
     'repeats your message but capsed'
 ))
 
-def menu(update, context):
-    keyboard = [
-        [
-            InlineKeyboardButton('Whole schedule', callback_data='Whole schedule'),
-            InlineKeyboardButton('Schedule for this week', callback_data='Schedule for this week'),
-        ],
-        [
-            InlineKeyboardButton('Schedule for today', callback_data='Schedule for today'),
-            InlineKeyboardButton('Schedule for tomorrow', callback_data='Schedule for tomorrow'),
-        ],
-        [
-            InlineKeyboardButton('Current subject', callback_data='Current subject'),
-            InlineKeyboardButton('Next subject', callback_data='Next subject'),
-        ],
-        [
-            InlineKeyboardButton('more', callback_data='more'),
-        ],
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    update.message.reply_text('Please choose:', reply_markup=reply_markup)
 commands.append(Command(
     'menu',
     menu,
     'prints menu'
 ))
-
-def button(update, context):
-    query = update.callback_query
-
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    query.answer()
-
-    query.edit_message_text(text=f"Selected option: {query.data}")
 
 def echo(update, context):
     """normal messages handler"""
