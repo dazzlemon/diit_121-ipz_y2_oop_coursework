@@ -38,10 +38,20 @@ commands.append(Command(
 def menu(update, context):
     keyboard = [
         [
-            InlineKeyboardButton("Option 1", callback_data='1'),
-            InlineKeyboardButton("Option 2", callback_data='2'),
+            InlineKeyboardButton('Whole schedule', callback_data='Whole schedule'),
+            InlineKeyboardButton('Schedule for this week', callback_data='Schedule for this week'),
         ],
-        [InlineKeyboardButton("Option 3", callback_data='3')],
+        [
+            InlineKeyboardButton('Schedule for today', callback_data='Schedule for today'),
+            InlineKeyboardButton('Schedule for tomorrow', callback_data='Schedule for tomorrow'),
+        ],
+        [
+            InlineKeyboardButton('Current subject', callback_data='Current subject'),
+            InlineKeyboardButton('Next subject', callback_data='Next subject'),
+        ],
+        [
+            InlineKeyboardButton('more', callback_data='more'),
+        ],
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
