@@ -66,11 +66,12 @@ from CLASS'''
 
 #     print('\n')
 
-for day in range(1, 7):
+for day in range(1, 6):
     cursor = conn.execute(
         '''SELECT TIME, IS_LECTURE, CLASS_ID
         from SCHEDULE
-        where DAY = ''' + str(day) + ' AND ODD_WEEK = 1 OR NULL AND GROUP_ID = 911'
+        where DAY = ''' + str(day) + ' AND (ODD_WEEK = 1 OR ODD_WEEK IS NULL) AND GROUP_ID = 911' +
+        ' ORDER BY TIME'
     )
 
     day_str = None
@@ -96,7 +97,6 @@ for day in range(1, 7):
         classname = next(conn.execute('SELECT NAME from CLASS where CLASS_ID = ' + str(class_id)))[0]
 
         print(f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}")
-
-
+    print()
 
 conn.close()
