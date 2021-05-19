@@ -20,14 +20,19 @@ class Schedule:
         self.group = group
         self.sql_conn = sql_conn
 
-    def odd_week_schedule(self):
+    def week_schedule(self, is_odd_week=None):
         for day in range(1, 6):
+
             cursor = conn.execute(
                 '''SELECT TIME, IS_LECTURE, CLASS_ID
                 from SCHEDULE
-                where DAY = ''' + str(day) +
-                ' AND (ODD_WEEK = 1 OR ODD_WEEK IS NULL) AND GROUP_ID = '
-                + str(self.group) + ' ORDER BY TIME'
+                where DAY = %s
+                %s AND GROUP_ID = %s
+                ORDER BY TIME''' % (
+                    day,
+                    '' if is_odd_week is None else f'AND (ODD_WEEK = {1 if is_odd_week else 0} OR ODD_WEEK IS NULL)',
+                    self.group
+                )
             )
 
             day_str = None
@@ -59,6 +64,9 @@ class Schedule:
 
                 print(f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}")
             print()
+    
+    def day_schedule(self, day, is_odd_week=None):
+        pass
 
 if __name__ == '__main__':
     import sqlite3
@@ -66,6 +74,6 @@ if __name__ == '__main__':
     conn = sqlite3.connect('schedule.db')
 
     s = Schedule(911, conn)
-    s.odd_week_schedule()
+    s.week_schedule(True)
 
     conn.close()
