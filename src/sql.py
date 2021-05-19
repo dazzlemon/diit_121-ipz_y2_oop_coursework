@@ -20,21 +20,9 @@ class Schedule:
         self.group = group
         self.sql_conn = sql_conn
 
+
     def week_schedule(self, is_odd_week=None):
         for day in range(1, 6):
-
-            cursor = conn.execute(
-                '''SELECT TIME, IS_LECTURE, CLASS_ID
-                from SCHEDULE
-                where DAY = %s
-                %s AND GROUP_ID = %s
-                ORDER BY TIME''' % (
-                    day,
-                    '' if is_odd_week is None else f'AND (ODD_WEEK = {1 if is_odd_week else 0} OR ODD_WEEK IS NULL)',
-                    self.group
-                )
-            )
-
             day_str = None
 
             if day == 1:
@@ -49,23 +37,44 @@ class Schedule:
                 day_str = 'FRIDAY'
 
             print(day_str)
+            self.day_schedule(day, is_odd_week)
 
-            for row in cursor:
-                time = row[0]
-                is_lecture = row[1]
-                class_id = row[2]
 
-                classname = next(
-                    conn.execute(
-                        'SELECT NAME from CLASS where CLASS_ID = '
-                        + str(class_id)
-                    )
-                )[0]
-
-                print(f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}")
-            print()
-    
     def day_schedule(self, day, is_odd_week=None):
+        week_constraint = ''
+        if is_odd_week is not None:
+            boolean = 1 if is_odd_week else 0
+            week_constraint = f'AND (ODD_WEEK = {boolean} OR ODD_WEEK IS NULL)'
+
+
+        cursor = conn.execute(
+            '''SELECT TIME, IS_LECTURE, CLASS_ID
+            from SCHEDULE
+            where DAY = %s
+            %s AND GROUP_ID = %s
+            ORDER BY TIME''' % (
+                day,
+                week_constraint,
+                self.group
+            )
+        )
+
+        for row in cursor:
+            time = row[0]
+            is_lecture = row[1]
+            class_id = row[2]
+
+            classname = next(
+                conn.execute(
+                    'SELECT NAME from CLASS where CLASS_ID = '
+                    + str(class_id)
+                )
+            )[0]
+
+            print(f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}")
+        print()
+
+    def next_class(self, time):
         pass
 
 if __name__ == '__main__':
