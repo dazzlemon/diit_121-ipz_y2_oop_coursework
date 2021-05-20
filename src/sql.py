@@ -7,12 +7,15 @@ class Schedule:
 
 
     def week_schedule(self, is_odd_week=None):
+        result = ''
         for day in range(1, 6):
-            print(self.day_from_int(day))
-            self.day_schedule(day, is_odd_week)
+            result += self.day_from_int(day) + '\n'
+            result += self.day_schedule(day, is_odd_week) + '\n'
+        return result
 
 
     def day_schedule(self, day, is_odd_week=None):
+        result = ''
         for row in self._day_schedule(day, is_odd_week):
             time = row[0]
             is_lecture = row[1]
@@ -25,8 +28,8 @@ class Schedule:
                 )
             )[0]
 
-            print(f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}")
-        print()
+            result += f"{'lecture' if is_lecture else 'practice'} about '{classname}' at {time}" + '\n'
+        return result + '\n'
 
 
     def _day_schedule(self, day, is_odd_week=None):
@@ -100,9 +103,8 @@ class Schedule:
                             )
                         )[0]
 
-                        print(f'Your next class is {classname}({"lecture" if is_lecture else "practice"})')
-                        print(f'on {self.day_from_int(day_)}, at {time}')
-                        return
+                        return (f'Your next class is {classname}({"lecture" if is_lecture else "practice"})' + '\n' +
+                            f'on {self.day_from_int(day_)}, at {time}')
 
 
 
@@ -112,8 +114,8 @@ if __name__ == '__main__':
     conn = sqlite3.connect('schedule.db')
 
     s = Schedule(911, conn)
-    s.week_schedule(True)
+    print(s.week_schedule(True))
 
-    s.next_class(1, 8, 1)
+    print(s.next_class(1, 8, 1))
 
     conn.close()
