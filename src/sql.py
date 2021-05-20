@@ -107,6 +107,39 @@ class Schedule:
                             f'on {self.day_from_int(day_)}, at {time}')
 
 
+# class Class:
+#     def __init__(self, id_, sql_conn):
+#         row = next(
+#             sql_conn.execute(
+#                 '''SELECT NAME,
+#                           LECTURER_ID,
+#                           INSTRUCTOR1_ID,
+#                           INSTRUCTOR2_ID,
+#                           LECTURE_ROOM_ID,
+#                           ROOM1_ID,
+#                           ROOM2_ID
+#                 from CLASS where CLASS_ID = ''' + str(id_)
+#             )
+#         )[0]
+
+#         self.name            = row[0]
+#         lecturer_id          = row[1]
+#         instructor1_id       = row[2]
+#         instructor2_id       = row[3]
+#         self.lecture_room_id = row[4]
+#         self.room1_id        = row[5]
+#         self.room2_id        = row[6]
+
+#         self.lecturer = Teacher(lecturer_id, sql_conn)
+#         self.instructor1 = Teacher(instructor1_id, sql_conn)
+#         self.instructor2 = Teacher(instructor2_id, sql_conn)
+
+
+# class Teacher:
+#     def __init__(self, id_, sql_conn):
+#         # TODO
+#         pass
+
 
 if __name__ == '__main__':
     import sqlite3
