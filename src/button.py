@@ -30,9 +30,9 @@ class Button(ABC):
 
 
     @abstractmethod
-    def operation(self, message) -> None:
+    def operation(self, message, command) -> None:
         """
-        Changes parameter message
+        Changes parameter message, performed if command == callback
         """
 
 
@@ -51,7 +51,7 @@ class LeafButton(Button):
             parent.add(self)
 
 
-    def operation(self, message) -> None:
+    def operation(self, message, command) -> None:
         """
         call for the handler
         """
@@ -96,33 +96,40 @@ class Menu(Button):
         return True
 
 
-    def operation(self, message) -> None:
+    def operation(self, message, command) -> None:
         """
         Print all Children in the order they were added, first row wise,
         then in row
         + 'Back if has parent', callback = 'back'
         + 'Exit', callback = 'exit'
         """
-        keyboard = list(map(
-            lambda row: list(map(
-                lambda button: InlineKeyboardButton(
-                    button.text, callback_data=button.callback
-                ),
-                row
-            )),
-            self._children
-        ))
+        if command == self.callback:
+            keyboard = list(map(
+                lambda row: list(map(
+                    lambda button: InlineKeyboardButton(
+                        button.text, callback_data=button.callback
+                    ),
+                    row
+                )),
+                self._children
+            ))
 
-        if self.parent is not None:
+            if self.parent is not None:
+                keyboard.append([])
+                keyboard[-1].append(
+                    InlineKeyboardButton('Back', callback_data='back')
+                )
+
             keyboard.append([])
             keyboard[-1].append(
-                InlineKeyboardButton('Back', callback_data='back')
+                InlineKeyboardButton('Exit', callback_data='exit')
             )
 
-        keyboard.append([])
-        keyboard[-1].append(
-            InlineKeyboardButton('Exit', callback_data='exit')
-        )
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
+            markup = InlineKeyboardMarkup(keyboard)
+            message.edit_reply_markup(reply_markup=markup)
+        else:
+            for row in self._children:
+                for button in row:
+                    button.operation(message, command)
+            else:
+                pass# error

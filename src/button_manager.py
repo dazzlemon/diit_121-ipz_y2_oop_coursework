@@ -57,10 +57,10 @@ class buttonManager:
 
 
     def print_main_menu(self, message):
-        self.main_menu.operation(message)
+        self.main_menu.operation(message, self.main_menu.callback)
 
 
-    def button_handler(self, update, context):
+    def button_handler(self, update, _context):
         query = update.callback_query
         query.answer()
 
@@ -68,4 +68,6 @@ class buttonManager:
         if callback_str == 'exit':
             query.delete_message()
         elif callback_str == 'back' and self.last_menu is not None:
-            self.last_menu.operation(update, context)
+            self.last_menu.operation(query.message)
+        else:
+            self.main_menu.operation(query.message, callback_str)
