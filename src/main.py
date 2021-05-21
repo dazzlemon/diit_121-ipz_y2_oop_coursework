@@ -48,7 +48,7 @@ def echo(update, context):
         text=update.message.text
     )
 
-bot = Bot('1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY', commands, echo, button)
 
 if __name__ == '__main__':
+    bot = Bot('1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY', commands, echo, button)
     bot.run()
