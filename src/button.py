@@ -77,7 +77,6 @@ class Menu(Button):
     def add(self, button: Button) -> None:
         """adds button to the current row"""
         self._children[-1].append(button)
-        #print(f'added button {button.text} to {self.text}')# TODO: DEBUG
 
 
     def remove(self, button: Button) -> None:

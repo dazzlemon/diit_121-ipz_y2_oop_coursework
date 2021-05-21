@@ -3,11 +3,9 @@ MAIN
 """
 
 from bot import Bot, Command
-from buttons import MenuManager
 from button_manager import buttonManager
 
 commands = []
-#menu_manager = MenuManager()
 button_mgr = buttonManager()
 
 def start(update, context):
