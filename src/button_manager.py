@@ -44,8 +44,12 @@ class buttonManager:
         self.whole_week_button = LeafButton(
             'Whole Week(Odd & Even)', 'whole_week', self.week_menu
         )
-        self.odd_week_button = LeafButton('', '', self.week_menu)# TODO
-        self.even_week_button = LeafButton('', '', self.week_menu)# TODO
+        self.odd_week_button = LeafButton(
+            'Odd Week', 'odd_week', self.week_menu
+        )
+        self.even_week_button = LeafButton(
+            'Even Week', 'even_week', self.week_menu
+        )
 
         # main_menu.group_menu init
         # TODO
@@ -70,9 +74,10 @@ class buttonManager:
         if callback_str == 'exit':
             query.delete_message()
         elif callback_str == 'back' and self.menu_history:
-            prev_menu = self.menu_history.pop()
-            self.main_menu.operation(query.message, prev_menu)
+            self.current_menu = self.menu_history.pop()
+            self.main_menu.operation(query.message, self.current_menu)
         else:
-            self.menu_history.append(self.current_menu)
-            self.current_menu = callback_str
-            self.main_menu.operation(query.message, callback_str)
+            if self.main_menu.operation(query.message, callback_str):
+                self.menu_history.append(self.current_menu)
+                self.current_menu = callback_str
+

@@ -30,9 +30,12 @@ class Button(ABC):
 
 
     @abstractmethod
-    def operation(self, message, command) -> None:
+    def operation(self, message, command) -> bool:
         """
         Changes parameter message, performed if command == callback
+        True -> changed menu
+        Fales -> didnt change menu
+        None -> Bad command(Nothing happend)
         """
 
 
@@ -51,7 +54,7 @@ class LeafButton(Button):
             parent.add(self)
 
 
-    def operation(self, message, command) -> None:
+    def operation(self, message, command) -> bool:
         """
         call for the handler
         """
@@ -95,7 +98,7 @@ class Menu(Button):
         return True
 
 
-    def operation(self, message, command) -> None:
+    def operation(self, message, command) -> bool:
         """
         Print all Children in the order they were added, first row wise,
         then in row
@@ -126,7 +129,10 @@ class Menu(Button):
 
             markup = InlineKeyboardMarkup(keyboard)
             message.edit_reply_markup(reply_markup=markup)
+            return True
         else:
             for row in self._children:
                 for button in row:
-                    button.operation(message, command)
+                    result = button.operation(message, command)
+                    if result:
+                        return True
