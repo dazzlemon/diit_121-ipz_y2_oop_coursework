@@ -3,9 +3,10 @@ MAIN
 """
 
 from bot import Bot, Command
-from buttons import menu, button
+from buttons import MenuManager
 
 commands = []
+menu_manager = MenuManager()
 
 def start(update, context):
     """/start handler"""
@@ -37,7 +38,7 @@ commands.append(Command(
 
 commands.append(Command(
     'menu',
-    menu,
+    menu_manager.menu,
     'prints menu'
 ))
 
@@ -50,5 +51,8 @@ def echo(update, context):
 
 
 if __name__ == '__main__':
-    bot = Bot('1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY', commands, echo, button)
+    bot = Bot(
+        '1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY', 
+        commands, echo, menu_manager.button_handler
+    )
     bot.run()
