@@ -131,5 +131,3 @@ class Menu(Button):
             for row in self._children:
                 for button in row:
                     button.operation(message, command)
-            else:
-                pass# error

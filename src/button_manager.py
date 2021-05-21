@@ -1,9 +1,10 @@
 from button import LeafButton, Menu
+from typing import List
 
 
 class buttonManager:
     def __init__(self):
-        self.last_menu = None
+        self.menu_history: List[str] = []
         self.current_menu = None
 
         self.main_menu = Menu('Menu', 'menu')
@@ -57,6 +58,7 @@ class buttonManager:
 
 
     def print_main_menu(self, message):
+        self.current_menu = self.main_menu.callback
         self.main_menu.operation(message, self.main_menu.callback)
 
 
@@ -67,7 +69,10 @@ class buttonManager:
         callback_str = query.data
         if callback_str == 'exit':
             query.delete_message()
-        elif callback_str == 'back' and self.last_menu is not None:
-            self.last_menu.operation(query.message)
+        elif callback_str == 'back' and self.menu_history:
+            prev_menu = self.menu_history.pop()
+            self.main_menu.operation(query.message, prev_menu)
         else:
+            self.menu_history.append(self.current_menu)
+            self.current_menu = callback_str
             self.main_menu.operation(query.message, callback_str)
