@@ -4,9 +4,11 @@ MAIN
 
 from bot import Bot, Command
 from buttons import MenuManager
+from button_manager import buttonManager
 
 commands = []
-menu_manager = MenuManager()
+#menu_manager = MenuManager()
+button_mgr = buttonManager()
 
 def start(update, context):
     """/start handler"""
@@ -36,9 +38,14 @@ commands.append(Command(
     'repeats your message but capsed'
 ))
 
+def menu_handler(update, _context):
+    msg = update.message.reply_text('Please choose: ')
+    button_mgr.print_main_menu(msg)
+
+
 commands.append(Command(
     'menu',
-    menu_manager.menu,
+    menu_handler,
     'prints menu'
 ))
 
@@ -52,7 +59,7 @@ def echo(update, context):
 
 if __name__ == '__main__':
     bot = Bot(
-        '1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY', 
-        commands, echo, menu_manager.button_handler
+        '1815999083:AAFClF7cEZq6IjXTxGNA07WQ5xLvZsKs6LY',
+        commands, echo, button_mgr.button_handler#menu_manager.button_handler
     )
     bot.run()
