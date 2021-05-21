@@ -88,7 +88,7 @@ class Menu(Button):
 
     def next_row(self):
         """go to the next row(if current row is empty does nothing)"""
-        if not self._children[-1]:
+        if self._children[-1]:
             self._children.append([])
 
 
@@ -103,26 +103,26 @@ class Menu(Button):
         + 'Back if has parent', callback = 'back'
         + 'Exit', callback = 'exit'
         """
-        keyboard = map(
-            lambda row: map(
+        keyboard = list(map(
+            lambda row: list(map(
                 lambda button: InlineKeyboardButton(
                     button.text, callback_data=button.callback
                 ),
                 row
-            ),
+            )),
             self._children
+        ))
+
+        if self.parent is not None:
+            keyboard.append([])
+            keyboard[-1].append(
+                InlineKeyboardButton('Back', callback_data='back')
+            )
+
+        keyboard.append([])
+        keyboard[-1].append(
+            InlineKeyboardButton('Exit', callback_data='exit')
         )
-
-        # if self.parent is not None:
-        #     keyboard.append([])
-        #     keyboard[-1].append(
-        #         InlineKeyboardButton('Back', callback_data='back')
-        #     )
-
-        # keyboard.append([])
-        # keyboard[-1].append(
-        #     InlineKeyboardButton('Exit', callback_data='exit')
-        # )
 
         markup = InlineKeyboardMarkup(keyboard)
         message.edit_reply_markup(reply_markup=markup)

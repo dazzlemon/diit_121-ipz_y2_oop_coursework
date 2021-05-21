@@ -10,10 +10,15 @@ class buttonManager:
 
         # main_menu init
         self.day_menu = Menu('Day', 'day', self.main_menu)
+        self.main_menu.next_row()
         self.week_menu = Menu('Week', 'week', self.main_menu)
+        self.main_menu.next_row()
         self.group_menu = Menu('Group', 'group', self.main_menu)
+        self.main_menu.next_row()
         self.teacher_menu = Menu('Teacher', 'teacher', self.main_menu)
+        self.main_menu.next_row()
         self.student_menu = Menu('Student', 'student', self.main_menu)
+        self.main_menu.next_row()
 
         # main_menu.day_menu init
         self.today_button = LeafButton('Today', 'today', self.day_menu)
@@ -62,5 +67,5 @@ class buttonManager:
         callback_str = query.data
         if callback_str == 'exit':
             query.delete_message()
-        if callback_str == 'back' and self.last_menu is not None:
+        elif callback_str == 'back' and self.last_menu is not None:
             self.last_menu.operation(update, context)
