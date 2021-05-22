@@ -4,7 +4,7 @@ Button hierarchy for telegram bot menu
 
 from __future__ import annotations
 from abc        import ABC, abstractmethod
-from typing     import List
+from typing     import List, Callable
 from telegram   import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -45,10 +45,14 @@ class LeafButton(Button):
     Doesnt print new menu when clicked,
     just calls handler and prints the result
     """
-    def __init__(self, text: str, callback: str, parent: Menu):
+    def __init__(
+        self,
+        text: str, callback: str, parent: Menu, handler: Callable[[], str]=None
+    ):
         """added to parent automatically"""
         self.text = text
         self.callback = callback
+        self.handler = handler
 
         if parent is not None:
             parent.add(self)
@@ -59,7 +63,11 @@ class LeafButton(Button):
         call for the handler
         """
         if command == self.callback:
-            message.edit_text(f'leaf button: {self.text}')
+            new_text = f'leaf button: {self.text}'
+            if self.handler is not None:
+                new_text = self.handler()
+
+            message.edit_text(new_text)
             message.edit_reply_markup()
             return False
 
