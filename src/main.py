@@ -3,10 +3,10 @@ MAIN
 """
 
 from bot import Bot, Command
-from button_manager import buttonManager
+from button_manager import ButtonManager
 
 commands = []
-button_mgr = buttonManager()
+button_mgr = ButtonManager()
 
 def start(update, context):
     """/start handler"""

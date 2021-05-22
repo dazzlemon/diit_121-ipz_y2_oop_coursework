@@ -16,17 +16,16 @@ class Button(ABC):
     respectively)
     """
     @property
-    def parent(self) -> Button:
+    def parent(self) -> Menu:
+        """
+        parent of this Button, needed to check if 'Back' button is needed
+        """
         return self._parent
 
 
     @parent.setter
     def parent(self, parent: Button):
         self._parent = parent
-
-
-    def is_composite(self) -> bool:
-        return False
 
 
     @abstractmethod
@@ -68,7 +67,9 @@ class LeafButton(Button):
                 new_text = self.handler()
 
             message.edit_text(new_text)
-            message.edit_reply_markup()
+            message.edit_reply_markup(reply_markup=None)
+            # raises BadRequest, but everything works as intended
+
             return False
 
 
@@ -104,10 +105,6 @@ class Menu(Button):
         """go to the next row(if current row is empty does nothing)"""
         if self._children[-1]:
             self._children.append([])
-
-
-    def is_composite(self) -> bool:
-        return True
 
 
     def operation(self, message: Message, command: str) -> bool:

@@ -1,8 +1,15 @@
-from button import LeafButton, Menu
+"""
+Button manager for timetable bot, using button module
+"""
+
 from typing import List
+from button import LeafButton, Menu
 
 
-class buttonManager:
+class ButtonManager:
+    """
+    Button manager for timetable bot, using button module
+    """
     def __init__(self):
         self.menu_history: List[str] = []
         self.current_menu = None
@@ -37,7 +44,7 @@ class buttonManager:
             'Odd Week Day', 'odd_week_day', self.week_day_menu
         )
         self.evenweek_day_button = LeafButton(
-            'Even Week Day', 'even_week_day', self.week_day_menu
+            'Even Week Day', 'even_week_day', self.week_day_menu, lambda: 'test'
         )
 
         # main_menu.week_menu init
@@ -52,21 +59,39 @@ class buttonManager:
         )
 
         # main_menu.group_menu init
-        # TODO
+        self.all_students_button = LeafButton(
+            'All Students', 'all_students', self.group_menu
+        )
+        self.subgroup1_button = LeafButton(
+            'Subgroup1', 'subgroup1', self.group_menu
+        )
+        self.subgroup2_button = LeafButton(
+            'Subgroup2', 'subgroup2', self.group_menu
+        )
 
         # main_menu.teacher_menu init
-        # TODO
+        self.teacher_info_button = LeafButton(
+            'Info about teacher', 'teacher_info', self.teacher_menu
+        )
 
         # main.menu.student_menu init
-        # TODO
+        self.student_info_button = LeafButton(
+            'Info about student', 'student_info', self.student_menu
+        )
 
 
     def print_main_menu(self, message):
+        """
+        creates new message with main menu keyboard
+        """
         self.current_menu = self.main_menu.callback
         self.main_menu.operation(message, self.main_menu.callback)
 
 
     def button_handler(self, update, _context):
+        """
+        handles callback buttons
+        """
         query = update.callback_query
         query.answer()
 
@@ -80,4 +105,3 @@ class buttonManager:
             if self.main_menu.operation(query.message, callback_str):
                 self.menu_history.append(self.current_menu)
                 self.current_menu = callback_str
-
