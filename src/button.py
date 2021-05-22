@@ -5,7 +5,7 @@ Button hierarchy for telegram bot menu
 from __future__ import annotations
 from abc        import ABC, abstractmethod
 from typing     import List, Callable
-from telegram   import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram   import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 
 class Button(ABC):
@@ -30,7 +30,7 @@ class Button(ABC):
 
 
     @abstractmethod
-    def operation(self, message, command) -> bool:
+    def operation(self, message: Message, command: str) -> bool:
         """
         Changes parameter message, performed if command == callback
         True -> changed menu
@@ -58,7 +58,7 @@ class LeafButton(Button):
             parent.add(self)
 
 
-    def operation(self, message, command) -> bool:
+    def operation(self, message: Message, command: str) -> bool:
         """
         call for the handler
         """
@@ -110,7 +110,7 @@ class Menu(Button):
         return True
 
 
-    def operation(self, message, command) -> bool:
+    def operation(self, message: Message, command: str) -> bool:
         """
         Print all Children in the order they were added, first row wise,
         then in row
