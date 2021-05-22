@@ -58,6 +58,10 @@ class LeafButton(Button):
         """
         call for the handler
         """
+        if command == self.callback:
+            message.edit_text(f'leaf button: {self.text}')
+            message.edit_reply_markup()
+            return False
 
 
 class Menu(Button):
