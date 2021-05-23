@@ -45,15 +45,21 @@ class LeafButton(Button):
     Leaf from Composite Pattern
     Doesnt print new menu when clicked,
     just calls handler and prints the result
+    arg2 is not None only if arg1 is not None
     """
     def __init__(
         self,
-        text: str, callback: str, parent: Menu, handler: Callable[[], str]=None
+        text: str, callback: str, parent: Menu,
+        handler: Callable[[], str]=None,
+        arg1_name: str=None, arg2_name: str=None
     ):
         """added to parent automatically"""
         self.text = text
         self.callback = callback
         self.handler = handler
+
+        self.arg1_name = arg1_name
+        self.arg2_name = arg2_name
 
         if parent is not None:
             parent.add(self)
@@ -68,7 +74,12 @@ class LeafButton(Button):
         if command == self.callback:
             new_text = f'leaf button: {self.text}'
             if self.handler is not None:
-                new_text = self.handler()
+                if arg1 is None and self.arg1_name is not None:
+                    pass# TODO: get arg1
+                elif arg2 is None and self.arg2_name is not None:
+                    pass# TODO: get arg2
+                else:# both args aren't None or it's okay if one of them is
+                    new_text = self.handler(arg1, arg2)
 
             message.edit_text(new_text)
             message.edit_reply_markup(reply_markup=None)
@@ -84,7 +95,11 @@ class Menu(Button):
     and 'Back' if has parent, if 'Back' is clicked than parent is called(printed)
     """
 
-    def __init__(self, text: str, callback: str, parent: Menu=None) -> None:
+    def __init__(
+        self,
+        text: str, callback: str,
+        parent: Menu=None
+    ) -> None:
         self._children: List[List[Button]] = [[]]
         self.parent = parent
         self.text = text
@@ -148,6 +163,6 @@ class Menu(Button):
         else:
             for row in self._children:
                 for button in row:
-                    result = button.operation(message, command)
+                    result = button.operation(message, command, arg1, arg2)
                     if result:
                         return True
