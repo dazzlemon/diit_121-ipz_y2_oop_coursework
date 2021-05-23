@@ -92,16 +92,32 @@ class ButtonManager:
         """
         handles callback buttons
         """
+        # callback data is limited with 64bytes, so it will contain command
+        # + two arguments in special order, delimited by ';'
+        # in case of this specific application no commands need more than two
+        # args at the same time(most need just the group_id)
+        # so this is sufficient, but in other cases another database
+        # for each chat and its arguments would probably be needed,
+        # or some weird compression
         query = update.callback_query
         query.answer()
 
-        callback_str = query.data
+        callback_tuple = query.data.split(';')
+
+        while len(callback_tuple) < 3:
+            callback_tuple += (None,)# append None args to unpack
+        callback_str, arg1, arg2 = callback_tuple
+
         if callback_str == 'exit':
             query.delete_message()
         elif callback_str == 'back' and self.menu_history:
             self.current_menu = self.menu_history.pop()
-            self.main_menu.operation(query.message, self.current_menu)
+            self.main_menu.operation(
+                query.message, self.current_menu, arg1, arg2
+            )
         else:
-            if self.main_menu.operation(query.message, callback_str):
+            if self.main_menu.operation(
+                query.message, callback_str, arg1, arg2
+            ):
                 self.menu_history.append(self.current_menu)
                 self.current_menu = callback_str

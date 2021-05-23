@@ -29,7 +29,9 @@ class Button(ABC):
 
 
     @abstractmethod
-    def operation(self, message: Message, command: str) -> bool:
+    def operation(
+        self, message: Message, command: str, arg1: str=None, arg2: str=None
+    ) -> bool:
         """
         Changes parameter message, performed if command == callback
         True -> changed menu
@@ -57,7 +59,9 @@ class LeafButton(Button):
             parent.add(self)
 
 
-    def operation(self, message: Message, command: str) -> bool:
+    def operation(
+        self, message: Message, command: str, arg1: str=None, arg2: str=None
+    ) -> bool:
         """
         call for the handler
         """
@@ -107,7 +111,9 @@ class Menu(Button):
             self._children.append([])
 
 
-    def operation(self, message: Message, command: str) -> bool:
+    def operation(
+        self, message: Message, command: str, arg1: str=None, arg2: str=None
+    ) -> bool:
         """
         Print all Children in the order they were added, first row wise,
         then in row
