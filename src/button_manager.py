@@ -180,7 +180,7 @@ class ButtonManager:
                 pass# TODO
             elif upd == 'week_day':
                 pass# TODO
-            menu = MultiPageMenu(opts, upd.upper(), callback)
+            menu = MultiPageMenu(opts, upd.upper(), callback, True)
             menu_history.append(current_menu)
             current_menu = upd + '_choice'
             menu.operation(query.message, None, user_info)
