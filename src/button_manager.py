@@ -2,9 +2,7 @@
 Button manager for timetable bot, using button module
 """
 
-from typing import List
 from button import LeafButton, Menu
-import sqlite3
 
 
 class ButtonManager:
@@ -112,16 +110,35 @@ class ButtonManager:
             callback_tuple += (None,)# append None args to unpack
         callback_str, arg1, arg2 = callback_tuple
 
+        row = next(self.sql_conn.execute("""SELECT MENU_HISTORY, CURRENT_MENU
+            FROM USER
+            WHERE ID = %s""" % update.effective_chat.id))
+
+        menu_history_str = row[0]
+        current_menu = row[1]
+
+        menu_history = menu_history_str.split(';')
+
         if callback_str == 'exit':
             query.delete_message()
-        elif callback_str == 'back' and self.menu_history:
-            self.current_menu = self.menu_history.pop()
+        elif callback_str == 'back' and menu_history:
+            current_menu = menu_history.pop()
             self.main_menu.operation(
-                query.message, self.current_menu, arg1, arg2
+                query.message, current_menu, arg1, arg2
             )
         else:
             if self.main_menu.operation(
                 query.message, callback_str, arg1, arg2
             ):
-                self.menu_history.append(self.current_menu)
-                self.current_menu = callback_str
+                menu_history.append(current_menu)
+                current_menu = callback_str
+
+        menu_history_str = ';'.join(menu_history)
+        self.sql_conn.execute("""REPLACE INTO USER
+                (CURRENT_MENU, MENU_HISTORY, ID)
+            VALUES
+                ('%s', '%s', %s)""" % (
+                    current_menu, menu_history_str, update.effective_chat.id
+                )
+        )
+        self.sql_conn.commit()
