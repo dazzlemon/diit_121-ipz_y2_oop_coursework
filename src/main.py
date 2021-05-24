@@ -2,9 +2,9 @@
 MAIN
 """
 
+import sqlite3
 from bot import Bot, Command
 from button_manager import ButtonManager
-import sqlite3
 
 
 if __name__ == '__main__':

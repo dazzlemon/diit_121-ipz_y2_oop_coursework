@@ -3,6 +3,7 @@ Button manager for timetable bot, using button module
 """
 
 from button import LeafButton, Menu
+from user   import User
 
 
 class ButtonManager:
@@ -87,7 +88,14 @@ class ButtonManager:
                 ('%s', '', %s)""" % (self.main_menu.callback, message.chat_id)
         )
         self.sql_conn.commit()
-        self.main_menu.operation(message, self.main_menu.callback)
+        self.main_menu.operation(
+            message,
+            self.main_menu.callback,
+            User(
+                self.sql_conn,
+                message.chat_id
+            )
+        )
 
 
     def button_handler(self, update, _context):
@@ -104,11 +112,7 @@ class ButtonManager:
         query = update.callback_query
         query.answer()
 
-        callback_tuple = query.data.split(';')
-
-        while len(callback_tuple) < 3:
-            callback_tuple += (None,)# append None args to unpack
-        callback_str, arg1, arg2 = callback_tuple
+        callback_str = query.data
 
         row = next(self.sql_conn.execute("""SELECT MENU_HISTORY, CURRENT_MENU
             FROM USER
@@ -118,17 +122,18 @@ class ButtonManager:
         current_menu = row[1]
 
         menu_history = menu_history_str.split(';')
+        user_info = User(self.sql_conn, update.effective_chat.id)
 
         if callback_str == 'exit':
             query.delete_message()
         elif callback_str == 'back' and menu_history:
             current_menu = menu_history.pop()
             self.main_menu.operation(
-                query.message, current_menu, arg1, arg2
+                query.message, current_menu, user_info
             )
         else:
             if self.main_menu.operation(
-                query.message, callback_str, arg1, arg2
+                query.message, callback_str, user_info
             ):
                 menu_history.append(current_menu)
                 current_menu = callback_str

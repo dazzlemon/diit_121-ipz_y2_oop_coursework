@@ -6,6 +6,7 @@ from __future__ import annotations
 from abc        import ABC, abstractmethod
 from typing     import List, Callable
 from telegram   import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from user       import User
 
 
 class Button(ABC):
@@ -30,7 +31,7 @@ class Button(ABC):
 
     @abstractmethod
     def operation(
-        self, message: Message, command: str, arg1: str=None, arg2: str=None
+        self, message: Message, command: str, user_info: User
     ) -> bool:
         """
         Changes parameter message, performed if command == callback
@@ -50,23 +51,19 @@ class LeafButton(Button):
     def __init__(
         self,
         text: str, callback: str, parent: Menu,
-        handler: Callable[[], str]=None,
-        arg1_name: str=None, arg2_name: str=None
+        handler: Callable[[], str]=None
     ):
         """added to parent automatically"""
         self.text = text
         self.callback = callback
         self.handler = handler
 
-        self.arg1_name = arg1_name
-        self.arg2_name = arg2_name
-
         if parent is not None:
             parent.add(self)
 
 
     def operation(
-        self, message: Message, command: str, arg1: str=None, arg2: str=None
+        self, message: Message, command: str, user_info: User
     ) -> bool:
         """
         call for the handler
@@ -74,12 +71,7 @@ class LeafButton(Button):
         if command == self.callback:
             new_text = f'leaf button: {self.text}'
             if self.handler is not None:
-                if arg1 is None and self.arg1_name is not None:
-                    pass# TODO: get arg1
-                elif arg2 is None and self.arg2_name is not None:
-                    pass# TODO: get arg2
-                else:# both args aren't None or it's okay if one of them is
-                    new_text = self.handler(arg1, arg2)
+                new_text = self.handler()
 
             message.edit_text(new_text)
             message.edit_reply_markup(reply_markup=None)
@@ -127,7 +119,7 @@ class Menu(Button):
 
 
     def operation(
-        self, message: Message, command: str, arg1: str=None, arg2: str=None
+        self, message: Message, command: str, user_info: User
     ) -> bool:
         """
         Print all Children in the order they were added, first row wise,
@@ -163,6 +155,6 @@ class Menu(Button):
         else:
             for row in self._children:
                 for button in row:
-                    result = button.operation(message, command, arg1, arg2)
+                    result = button.operation(message, command, user_info)
                     if result:
                         return True
