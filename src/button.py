@@ -51,7 +51,7 @@ class LeafButton(Button):
     def __init__(
         self,
         text: str, callback: str, parent: Menu,
-        handler: Callable[[], str]=None
+        handler: Callable[[User], str]=None
     ):
         """added to parent automatically"""
         self.text = text
@@ -71,7 +71,7 @@ class LeafButton(Button):
         if command == self.callback:
             new_text = f'leaf button: {self.text}'
             if self.handler is not None:
-                new_text = self.handler()
+                new_text = self.handler(user_info)
 
             message.edit_text(new_text)
             message.edit_reply_markup(reply_markup=None)

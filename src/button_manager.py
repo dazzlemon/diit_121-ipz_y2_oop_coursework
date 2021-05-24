@@ -42,7 +42,7 @@ class ButtonManager:
             'Odd Week Day', 'odd_week_day', self.week_day_menu
         )
         self.evenweek_day_button = LeafButton(
-            'Even Week Day', 'even_week_day', self.week_day_menu, lambda: 'test'
+            'Even Week Day', 'even_week_day', self.week_day_menu, lambda n: 'test'
         )
 
         # main_menu.week_menu init
