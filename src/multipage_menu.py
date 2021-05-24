@@ -51,16 +51,19 @@ class MultiPageMenu(Button):
                 text,
                 callback_data=callback
             )])
+        print('test0')# printed# TODO: DEBUG
         if self.current_page > 0:
             pass# TODO: add '<'# prev page button
         if self.current_page < len(self.options) / self.options_per_page:
             pass# TODO: add '>'# next page button
+        print('test01')#TODO: DEBUG#printed
 
-        if self.parent is not None:
-            keyboard.append([])
-            keyboard[-1].append(
-                InlineKeyboardButton('Back', callback_data='back')
-            )
+        # if self.parent is not None:# TODO: doesnt work when this is uncommented
+        #     keyboard.append([])
+        #     keyboard[-1].append(
+        #         InlineKeyboardButton('Back', callback_data='back')
+        #     )
+        print('test02')# TODO: DEBUG# not printed
         keyboard.append([])
         keyboard[-1].append(
             InlineKeyboardButton('Exit', callback_data='exit')
@@ -70,7 +73,7 @@ class MultiPageMenu(Button):
         #     for button in row:
         #         print(button)# TODO: DEBUG
         # print(f'keybord len = {len(keyboard)}')
-        print('test')
+        print('test')# not printed
 
         markup = InlineKeyboardMarkup(keyboard)
         message.edit_reply_markup(reply_markup=markup)
