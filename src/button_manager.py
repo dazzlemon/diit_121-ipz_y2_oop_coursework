@@ -2,9 +2,11 @@
 Button manager for timetable bot, using button module
 """
 
+import datetime
 from button         import LeafButton, Menu
 from user           import User
 from multipage_menu import MultiPageMenu
+from sql            import Schedule
 
 
 class ButtonManager:
@@ -15,6 +17,8 @@ class ButtonManager:
         self.user_db = user_db
         self.schedule_db = schedule_db
         self.main_menu = Menu('Menu', 'menu')
+
+        self.schedule = Schedule(schedule_db)
 
         # main_menu init
         self.day_menu = Menu('Day', 'day', self.main_menu)
@@ -28,10 +32,15 @@ class ButtonManager:
         self.student_menu = Menu('Student', 'student', self.main_menu)
         self.main_menu.next_row()
 
+        def today_schedule(user) -> str:
+            day = datetime.datetime.today().weekday()
+            is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
+            return self.schedule.day_schedule(day, user.group_id, is_odd_week)
+
         # main_menu.day_menu init
         self.today_button = LeafButton(
             'Today', 'today', self.day_menu,
-            lambda user: f'today schedule for {user.group_id}', 'group_id'
+            today_schedule, 'group_id'
         )
         self.tomorrow_button = LeafButton('Tomorrow', 'tomorrow', self.day_menu)
         self.calendar_day_button = LeafButton(
@@ -124,7 +133,6 @@ class ButtonManager:
                 callback_list
         ))
         command_str = command_str_list[0]
-        print(f'callback={query.data}')#TODO: DEBUG
 
         update_strs = [update for update in callback_list if '!' in update]
         update_strs = list(map(lambda str_: str_.replace('!', ''), update_strs))
@@ -138,7 +146,6 @@ class ButtonManager:
         current_menu = row[1]
 
         menu_history = (menu_history_str or '').split(';')
-        print(f'new_val_strs len={len(new_val_strs)}')#TODO:DEBUG
 
         if new_val_strs:
             for new_val_str in new_val_strs:
@@ -150,8 +157,6 @@ class ButtonManager:
                 ))
                 if row[0] is str:
                     new_val = "'" + new_val + "'"
-
-                print(f'varname={varname}, new_val={new_val}')#TODO:DEBUG
 
                 self.user_db.execute("""REPLACE INTO USER
                         (ID, %s)
@@ -191,10 +196,6 @@ class ButtonManager:
             current_menu = upd + '_choice'
             menu.operation(query.message, None, user_info)
         else:
-            print(f'command_str={command_str}')#TODO:DEBUG
-            print(f'group_id={user_info.group_id}')#TODO:DEBUG
-            for i in callback_list:
-                print('\t', i, ' ', '!' in i and ';' in i)
             if command_str == 'exit':
                 query.delete_message()
             elif command_str == 'back' and menu_history:
