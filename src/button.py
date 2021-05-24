@@ -30,6 +30,11 @@ class Button(ABC):
 
 
     @abstractmethod
+    def callback_args(self) -> str:
+        """returns additional data to be added to callback"""
+
+
+    @abstractmethod
     def operation(
         self, message: Message, command: str, user_info: User
     ) -> bool:
@@ -51,15 +56,27 @@ class LeafButton(Button):
     def __init__(
         self,
         text: str, callback: str, parent: Menu,
-        handler: Callable[[User], str]=None
+        handler: Callable[[User], str]=None,
+        arg1name: str=None, arg2name: str=None
     ):
         """added to parent automatically"""
         self.text = text
         self.callback = callback
         self.handler = handler
+        self.arg1name=arg1name
+        self.arg2name=arg2name
 
         if parent is not None:
             parent.add(self)
+
+
+    def callback_args(self) -> str:
+        cb_args = ''
+        if self.arg1name is not None:
+            cb_args += ';!' + self.arg1name
+        if self.arg2name is not None:
+            cb_args += ';!' + self.arg2name
+        return cb_args
 
 
     def operation(
@@ -90,7 +107,7 @@ class Menu(Button):
     def __init__(
         self,
         text: str, callback: str,
-        parent: Menu=None
+        parent: Menu=None,
     ) -> None:
         self._children: List[List[Button]] = [[]]
         self.parent = parent
@@ -118,6 +135,10 @@ class Menu(Button):
             self._children.append([])
 
 
+    def callback_args(self) -> str:
+        return ''
+
+
     def operation(
         self, message: Message, command: str, user_info: User
     ) -> bool:
@@ -131,7 +152,8 @@ class Menu(Button):
             keyboard = list(map(
                 lambda row: list(map(
                     lambda button: InlineKeyboardButton(
-                        button.text, callback_data=button.callback
+                        button.text, callback_data=(button.callback +
+                        button.callback_args())
                     ),
                     row
                 )),

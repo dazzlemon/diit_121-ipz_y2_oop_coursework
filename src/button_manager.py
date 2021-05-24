@@ -2,8 +2,9 @@
 Button manager for timetable bot, using button module
 """
 
-from button import LeafButton, Menu
-from user   import User
+from button         import LeafButton, Menu
+from user           import User
+from multipage_menu import MultiPageMenu
 
 
 class ButtonManager:
@@ -27,7 +28,10 @@ class ButtonManager:
         self.main_menu.next_row()
 
         # main_menu.day_menu init
-        self.today_button = LeafButton('Today', 'today', self.day_menu)
+        self.today_button = LeafButton(
+            'Today', 'today', self.day_menu,
+            lambda user: user.group, 'group'
+        )
         self.tomorrow_button = LeafButton('Tomorrow', 'tomorrow', self.day_menu)
         self.calendar_day_button = LeafButton(
             'Calendar Day', 'calendar_day', self.day_menu
@@ -112,11 +116,22 @@ class ButtonManager:
         query = update.callback_query
         query.answer()
 
-        callback_str = query.data
+        callback_list = query.data.split(';')
+
+        command_str = next(
+            (command for command in callback_list if (
+                    not '!' in command
+                    and not '=' in command
+                )
+            ), [None]# TODO: actually should never happen
+        )
+        update_strs = [update for update in callback_list if '!' in update]
+        update_strs = list(map(lambda str_: str_.replace('!', ''), update_strs))
+        new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
         row = next(self.sql_conn.execute("""SELECT MENU_HISTORY, CURRENT_MENU
-            FROM USER
-            WHERE ID = %s""" % update.effective_chat.id))
+                FROM USER
+                WHERE ID = %s""" % update.effective_chat.id))
 
         menu_history_str = row[0]
         current_menu = row[1]
@@ -124,20 +139,65 @@ class ButtonManager:
         menu_history = menu_history_str.split(';')
         user_info = User(self.sql_conn, update.effective_chat.id)
 
-        if callback_str == 'exit':
-            query.delete_message()
-        elif callback_str == 'back' and menu_history:
-            current_menu = menu_history.pop()
-            self.main_menu.operation(
-                query.message, current_menu, user_info
-            )
-        else:
-            if self.main_menu.operation(
-                query.message, callback_str, user_info
-            ):
-                menu_history.append(current_menu)
-                current_menu = callback_str
+        if new_val_strs:
+            for new_val_str in new_val_strs:
+                varname, new_val = new_val_str.split('=')
+                varname = varname.upper()
 
+                row = next(self.sql_conn.execute(
+                    """SELECT %s FROM USER""" % varname
+                ))
+                if row[0] is str:
+                    new_val = "'" + new_val + "'"
+
+                self.sql_conn.execute("""REPLACE INTO USER
+                        (ID, %s)
+                    VALUES
+                        (%s, %s)""" % (
+                            varname,
+                            update.effective_chat.id,
+                            new_val
+                        )
+                )
+                self.sql_conn.commit()
+        if update_strs:
+            upd = update_strs[0]
+            update_strs.remove(upd)
+            callback = ';'.join(update_strs) + ';' + command_str
+            opts = []
+            if upd == 'group_id':
+                rows = self.sql_conn.execute("""SELECT DISTINCT GROUP_ID
+                    FROM SCHEDULE""")
+
+                for row in rows:
+                    id_ = row[0]
+                    opts.append((id_, id_))
+            elif upd == 'teacher_id':
+                pass# TODO
+            elif upd == 'student_id':
+                pass# TODO
+            elif upd == 'calendar_day':
+                pass# TODO
+            elif upd == 'week_day':
+                pass# TODO
+            menu = MultiPageMenu(opts, upd.upper(), callback)
+            menu_history.append(current_menu)
+            current_menu = upd + '_choice'
+            menu.operation(query.message, None, user_info)
+        else:
+            if command_str == 'exit':
+                query.delete_message()
+            elif command_str == 'back' and menu_history:
+                current_menu = menu_history.pop()
+                self.main_menu.operation(
+                    query.message, current_menu, user_info
+                )
+            else:
+                if self.main_menu.operation(
+                    query.message, command_str, user_info
+                ):
+                    menu_history.append(current_menu)
+                    current_menu = command_str
         menu_history_str = ';'.join(menu_history)
         self.sql_conn.execute("""REPLACE INTO USER
                 (CURRENT_MENU, MENU_HISTORY, ID)
