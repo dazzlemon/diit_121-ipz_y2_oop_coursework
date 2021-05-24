@@ -89,7 +89,6 @@ class LeafButton(Button):
             new_text = f'leaf button: {self.text}'
             if self.handler is not None:
                 new_text = self.handler(user_info)
-
             message.edit_text(new_text)
             message.edit_reply_markup(reply_markup=None)
             # raises BadRequest, but everything works as intended
