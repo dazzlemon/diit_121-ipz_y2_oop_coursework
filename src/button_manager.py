@@ -4,16 +4,15 @@ Button manager for timetable bot, using button module
 
 from typing import List
 from button import LeafButton, Menu
+import sqlite3
 
 
 class ButtonManager:
     """
     Button manager for timetable bot, using button module
     """
-    def __init__(self):
-        self.menu_history: List[str] = []
-        self.current_menu = None
-
+    def __init__(self, sql_conn):
+        self.sql_conn = sql_conn
         self.main_menu = Menu('Menu', 'menu')
 
         # main_menu init
@@ -84,7 +83,12 @@ class ButtonManager:
         """
         creates new message with main menu keyboard
         """
-        self.current_menu = self.main_menu.callback
+        self.sql_conn.execute("""REPLACE INTO USER
+                (CURRENT_MENU, MENU_HISTORY, ID)
+            VALUES
+                ('%s', '', %s)""" % (self.main_menu.callback, message.chat_id)
+        )
+        self.sql_conn.commit()
         self.main_menu.operation(message, self.main_menu.callback)
 
 
