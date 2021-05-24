@@ -11,8 +11,9 @@ class ButtonManager:
     """
     Button manager for timetable bot, using button module
     """
-    def __init__(self, sql_conn):
-        self.sql_conn = sql_conn
+    def __init__(self, user_db, schedule_db):
+        self.user_db = user_db
+        self.schedule_db = schedule_db
         self.main_menu = Menu('Menu', 'menu')
 
         # main_menu init
@@ -30,7 +31,7 @@ class ButtonManager:
         # main_menu.day_menu init
         self.today_button = LeafButton(
             'Today', 'today', self.day_menu,
-            lambda user: user.group, 'group'
+            lambda user: user.group, 'group_id'
         )
         self.tomorrow_button = LeafButton('Tomorrow', 'tomorrow', self.day_menu)
         self.calendar_day_button = LeafButton(
@@ -86,17 +87,17 @@ class ButtonManager:
         """
         creates new message with main menu keyboard
         """
-        self.sql_conn.execute("""REPLACE INTO USER
+        self.user_db.execute("""REPLACE INTO USER
                 (CURRENT_MENU, MENU_HISTORY, ID)
             VALUES
                 ('%s', '', %s)""" % (self.main_menu.callback, message.chat_id)
         )
-        self.sql_conn.commit()
+        self.user_db.commit()
         self.main_menu.operation(
             message,
             self.main_menu.callback,
             User(
-                self.sql_conn,
+                self.user_db,
                 message.chat_id
             )
         )
@@ -129,7 +130,7 @@ class ButtonManager:
         update_strs = list(map(lambda str_: str_.replace('!', ''), update_strs))
         new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
-        row = next(self.sql_conn.execute("""SELECT MENU_HISTORY, CURRENT_MENU
+        row = next(self.user_db.execute("""SELECT MENU_HISTORY, CURRENT_MENU
                 FROM USER
                 WHERE ID = %s""" % update.effective_chat.id))
 
@@ -137,20 +138,20 @@ class ButtonManager:
         current_menu = row[1]
 
         menu_history = menu_history_str.split(';')
-        user_info = User(self.sql_conn, update.effective_chat.id)
+        user_info = User(self.user_db, update.effective_chat.id)
 
         if new_val_strs:
             for new_val_str in new_val_strs:
                 varname, new_val = new_val_str.split('=')
                 varname = varname.upper()
 
-                row = next(self.sql_conn.execute(
+                row = next(self.user_db.execute(
                     """SELECT %s FROM USER""" % varname
                 ))
                 if row[0] is str:
                     new_val = "'" + new_val + "'"
 
-                self.sql_conn.execute("""REPLACE INTO USER
+                self.user_db.execute("""REPLACE INTO USER
                         (ID, %s)
                     VALUES
                         (%s, %s)""" % (
@@ -159,14 +160,14 @@ class ButtonManager:
                             new_val
                         )
                 )
-                self.sql_conn.commit()
+                self.user_db.commit()
         if update_strs:
             upd = update_strs[0]
             update_strs.remove(upd)
             callback = ';'.join(update_strs) + ';' + command_str
             opts = []
             if upd == 'group_id':
-                rows = self.sql_conn.execute("""SELECT DISTINCT GROUP_ID
+                rows = self.schedule_db.execute("""SELECT DISTINCT GROUP_ID
                     FROM SCHEDULE""")
 
                 for row in rows:
@@ -199,11 +200,11 @@ class ButtonManager:
                     menu_history.append(current_menu)
                     current_menu = command_str
         menu_history_str = ';'.join(menu_history)
-        self.sql_conn.execute("""REPLACE INTO USER
+        self.user_db.execute("""REPLACE INTO USER
                 (CURRENT_MENU, MENU_HISTORY, ID)
             VALUES
                 ('%s', '%s', %s)""" % (
                     current_menu, menu_history_str, update.effective_chat.id
                 )
         )
-        self.sql_conn.commit()
+        self.user_db.commit()

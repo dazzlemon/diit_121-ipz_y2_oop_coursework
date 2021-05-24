@@ -9,8 +9,9 @@ from button_manager import ButtonManager
 
 if __name__ == '__main__':
     users_db = sqlite3.connect('users.db', check_same_thread=False)
+    schedule_db = sqlite3.connect('schedule.db', check_same_thread=False)
     commands = []
-    button_mgr = ButtonManager(users_db)
+    button_mgr = ButtonManager(users_db, schedule_db)
 
 
     def start(update, context):
