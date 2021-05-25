@@ -162,33 +162,43 @@ class ButtonManager:
                 update_strs, command_str, menu_history, current_menu, query, user_info
             )
         else:
-            if command_str == 'pass':
-                pass
-            elif command_str == 'exit':
-                query.delete_message()
-            elif command_str == 'back' and menu_history:
-                current_menu = menu_history.pop()
-                self.main_menu.operation(
-                    query.message, current_menu, user_info
-                )
-            elif command_str == 'next_page' and self.current_updater is not None:
-                self.current_updater.current_page += 1
-                self.current_updater.operation(
-                    query.message, command_str, user_info
-                )
-            elif command_str == 'prev_page' and self.current_updater is not None:
-                self.current_updater.current_page -= 1
-                self.current_updater.operation(
-                    query.message, command_str, user_info
-                )
-            else:
-                if self.main_menu.operation(
-                    query.message, command_str, user_info
-                ):
-                    menu_history.append(current_menu)
-                    current_menu = command_str
+            self.default_handler(
+                command_str, query, menu_history, user_info, current_menu
+            )
         menu_history_str = ';'.join(menu_history)
         self._update_menu(current_menu, menu_history_str, update.effective_chat.id)
+
+
+    def default_handler(
+        self,
+        command_str: str, query: CallbackQuery, menu_history: List[str],
+        user_info: User, current_menu: str
+    ):
+        if command_str == 'pass':
+            pass
+        elif command_str == 'exit':
+            query.delete_message()
+        elif command_str == 'back' and menu_history:
+            current_menu = menu_history.pop()
+            self.main_menu.operation(
+                query.message, current_menu, user_info
+            )
+        elif command_str == 'next_page' and self.current_updater is not None:
+            self.current_updater.current_page += 1
+            self.current_updater.operation(
+                query.message, command_str, user_info
+            )
+        elif command_str == 'prev_page' and self.current_updater is not None:
+            self.current_updater.current_page -= 1
+            self.current_updater.operation(
+                query.message, command_str, user_info
+            )
+        elif self.main_menu.operation(
+            query.message, command_str, user_info
+        ):
+            menu_history.append(current_menu)
+            current_menu = command_str
+        return current_menu
 
 
     def _update_menu(self, current_menu, menu_history, id_):
