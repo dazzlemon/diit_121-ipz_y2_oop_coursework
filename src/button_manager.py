@@ -36,7 +36,7 @@ class ButtonManager:
         self.main_menu.next_row()
 
         def today_schedule(user) -> str:
-            day = datetime.datetime.today().weekday()
+            day = datetime.datetime.today().weekday() + 1
             is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
             return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
