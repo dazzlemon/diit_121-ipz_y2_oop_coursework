@@ -4,11 +4,11 @@ Button manager for timetable bot, using button module
 
 import datetime
 from typing         import List
+from telegram       import CallbackQuery, Update
 from button         import LeafButton, Menu
 from user           import User
 from multipage_menu import MultiPageMenu
 from sql            import Schedule
-from telegram       import CallbackQuery, Update
 from calendar_menu  import CalendarMenu
 
 
@@ -161,18 +161,22 @@ class ButtonManager:
                 update_strs, command_str, menu_history, current_menu, query, user_info
             )
         else:
-            current_menu = self.default_handler(
+            current_menu = self._default_handler(
                 command_str, query, menu_history, user_info, current_menu
             )
         menu_history_str = ';'.join(menu_history)
         self._update_menu(current_menu, menu_history_str, update.effective_chat.id)
 
 
-    def default_handler(
+    def _default_handler(
         self,
         command_str: str, query: CallbackQuery, menu_history: List[str],
         user_info: User, current_menu: str
     ):
+        """
+        Handles callbacks that weren't handled by update or new val handlers,
+        these are either built-in callbacks or menu buttons
+        """
         if command_str == 'pass':
             pass
         elif command_str == 'exit':

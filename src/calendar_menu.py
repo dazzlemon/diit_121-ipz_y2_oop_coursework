@@ -5,9 +5,9 @@ Menu to choose calendar day
 import calendar
 from datetime import date
 from typing   import List
+from telegram import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from button   import Button
 from user     import User
-from telegram import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 
 class CalendarMenu(Button):
