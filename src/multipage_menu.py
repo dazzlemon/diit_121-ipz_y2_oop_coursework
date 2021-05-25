@@ -44,10 +44,20 @@ class MultiPageMenu(Button):
                 text,
                 callback_data=callback
             )])
+
+        nav_buttons: List[InlineKeyboardButton] = []
         if self.current_page > 0:
-            pass# TODO: add '<'# prev page button
+            nav_buttons.append(InlineKeyboardButton(
+                '<',
+                callback_data='prev_page'
+            ))
         if self.current_page < len(self.options) / self.options_per_page:
-            pass# TODO: add '>'# next page button
+            nav_buttons.append(InlineKeyboardButton(
+                '>',
+                callback_data='next_page'
+            ))
+        if nav_buttons != []:
+            keyboard.append(nav_buttons)
 
         if self.has_parent:
             keyboard.append([])

@@ -18,6 +18,7 @@ class ButtonManager:
         self.schedule_db = schedule_db
         self.main_menu = Menu('Menu', 'menu')
 
+        self.current_updater = None
         self.schedule = Schedule(schedule_db)
 
         # main_menu init
@@ -191,10 +192,10 @@ class ButtonManager:
                 pass# TODO
             elif upd == 'week_day':
                 pass# TODO
-            menu = MultiPageMenu(opts, upd.upper(), callback, True)
+            self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
             menu_history.append(current_menu)
             current_menu = upd + '_choice'
-            menu.operation(query.message, None, user_info)
+            self.current_updater.operation(query.message, None, user_info)
         else:
             if command_str == 'exit':
                 query.delete_message()
@@ -202,6 +203,16 @@ class ButtonManager:
                 current_menu = menu_history.pop()
                 self.main_menu.operation(
                     query.message, current_menu, user_info
+                )
+            elif command_str == 'next_page' and self.current_updater is not None:
+                self.current_updater.current_page += 1
+                self.current_updater.operation(
+                    query.message, command_str, user_info
+                )
+            elif command_str == 'prev_page' and self.current_updater is not None:
+                self.current_updater.current_page -= 1
+                self.current_updater.operation(
+                    query.message, command_str, user_info
                 )
             else:
                 if self.main_menu.operation(
