@@ -1,3 +1,5 @@
+from user import User
+
 class UserDbManager:
     def __init__(self, sql_conn):
         self.sql_conn = sql_conn
@@ -51,3 +53,15 @@ class UserDbManager:
                     ({id_}, {new_val})"""
             )
         self.sql_conn.commit()
+
+
+    def user(self, id_):
+        row = next(self.sql_conn.execute("""SELECT GROUP_ID,
+                                              TEACHER_ID,
+                                              STUDENT_ID,
+                                              CALENDAR_DAY,
+                                              WEEK_DAY
+                                  FROM USER
+                                  WHERE ID = %s""" % id_
+        ))
+        return User(row[0], row[1], row[2], row[3], row[4])

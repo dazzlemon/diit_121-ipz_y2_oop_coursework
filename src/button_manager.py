@@ -113,10 +113,7 @@ class ButtonManager:
         self.main_menu.operation(
             message,
             self.main_menu.callback,
-            User(
-                self.user_db.sql_conn,
-                message.chat_id
-            )
+            self.user_db.user(message.chat_id)
         )
 
 
@@ -150,7 +147,7 @@ class ButtonManager:
         if new_val_strs:
             self._new_val_handler(new_val_strs, update)
 
-        user_info = User(self.user_db.sql_conn, update.effective_chat.id)
+        user_info = self.user_db.user(update.effective_chat.id)
 
         if update_strs:
             self._update_handler(
