@@ -39,7 +39,17 @@ class ButtonManager:
 
         def today_schedule(user) -> str:
             day = datetime.datetime.today().weekday() + 1
+            if day > 7:
+                day -= 7
             is_odd_week = datetime.datetime.today().isocalendar().week % 2 == 1
+            return self.schedule.day_schedule(day, user.group_id, is_odd_week)
+
+        def tomorrow_schedule(user) -> str:
+            day = datetime.datetime.today().weekday() + 2
+            if day > 7:
+                day -= 7
+            is_odd_week = (datetime.datetime.today()
+                + datetime.timedelta(days=1)).isocalendar().week % 2 == 1
             return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
         def calendar_day_schedule(user) -> str:
@@ -54,7 +64,10 @@ class ButtonManager:
             'Today', 'today', self.day_menu,
             today_schedule, 'group_id'
         )
-        self.tomorrow_button = LeafButton('Tomorrow', 'tomorrow', self.day_menu)
+        self.tomorrow_button = LeafButton(
+            'Tomorrow', 'tomorrow', self.day_menu,
+            tomorrow_schedule, 'group_id'
+        )
         self.calendar_day_button = LeafButton(
             'Calendar Day', 'calendar_day_button', self.day_menu,
             calendar_day_schedule, 'group_id', 'calendar_day'
