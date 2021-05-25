@@ -163,7 +163,7 @@ class ButtonManager:
         user_info = User(self.user_db, update.effective_chat.id)
 
         if update_strs:
-            current_menu = self._update_handler(
+            self._update_handler(
                 update_strs, command_str, menu_history, current_menu, query, user_info
             )
         else:
@@ -257,10 +257,10 @@ class ButtonManager:
             next_year = datetime.date(today.year + 1, today.month, today.day)
             self.current_updater = CalendarMenu(
                 today,
-                next_year
+                next_year,
+                True
             )
         elif upd == 'week_day':
             pass# TODO
         menu_history.append(current_menu)
         self.current_updater.operation(query.message, None, user_info)
-        return upd + '_choice'
