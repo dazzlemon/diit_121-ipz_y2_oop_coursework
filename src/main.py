@@ -31,6 +31,9 @@ if __name__ == '__main__':
 
 
     def menu_handler(update, _context):
+        """
+        main menu
+        """
         msg = update.message.reply_text('Please choose: ')
         button_mgr.print_main_menu(msg)
     commands.append(Command(

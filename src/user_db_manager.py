@@ -1,11 +1,18 @@
+"""
+Manager for user info
+"""
 from user import User
 
 class UserDbManager:
+    """
+    Manager for user info
+    """
     def __init__(self, sql_conn):
         self.sql_conn = sql_conn
 
 
     def menu_data(self, id_):
+        """returns tuple (menu_history_str, current_menu)"""
         row = next(self.sql_conn.execute(f"""SELECT MENU_HISTORY, CURRENT_MENU
                 FROM USER
                 WHERE ID = {id_}"""
@@ -16,6 +23,7 @@ class UserDbManager:
 
 
     def update_menu(self, current_menu, menu_history, id_):
+        """inserts or replaces info about users state"""
         if self.is_row_exists(id_):
             self.sql_conn.execute(
                 f"""UPDATE USER
@@ -33,13 +41,15 @@ class UserDbManager:
 
 
     def is_row_exists(self, id_):
+        """check if row with id exists"""
         row = next(self.sql_conn.execute(
             f"""SELECT * FROM USER WHERE ID = {id_}"""
         ), None)
         return row is not None
 
 
-    def update_or_replace(self, varname, id_, new_val):
+    def insert_or_replace(self, varname, id_, new_val):
+        """inserts or updates varname with new_val"""
         if self.is_row_exists(id_):
             self.sql_conn.execute(
                 f"""UPDATE USER
@@ -56,6 +66,7 @@ class UserDbManager:
 
 
     def user(self, id_):
+        """returns user by their id"""
         row = next(self.sql_conn.execute("""SELECT GROUP_ID,
                                               TEACHER_ID,
                                               STUDENT_ID,

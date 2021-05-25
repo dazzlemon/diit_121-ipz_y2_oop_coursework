@@ -121,13 +121,6 @@ class ButtonManager:
         """
         handles callback buttons
         """
-        # callback data is limited with 64bytes, so it will contain command
-        # + two arguments in special order, delimited by ';'
-        # in case of this specific application no commands need more than two
-        # args at the same time(most need just the group_id)
-        # so this is sufficient, but in other cases another database
-        # for each chat and its arguments would probably be needed,
-        # or some weird compression
         query = update.callback_query
         query.answer()
         callback_list = query.data.split(';')
@@ -208,7 +201,7 @@ class ButtonManager:
 
             if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
-            self.user_db.update_or_replace(varname, update.effective_chat.id, new_val)
+            self.user_db.insert_or_replace(varname, update.effective_chat.id, new_val)
 
 
     def _update_handler(

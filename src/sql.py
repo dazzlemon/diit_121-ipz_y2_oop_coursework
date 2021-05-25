@@ -1,12 +1,21 @@
+"""
+Read only manager for schedule database
+"""
 from itertools import cycle, dropwhile, takewhile
 from sqlite3 import Connection
 
 class Schedule:
+    """
+    Read only manager for schedule database
+    """
     def __init__(self, sql_conn: Connection):
         self.sql_conn = sql_conn
 
 
     def week_schedule(self, group_id: int, is_odd_week=None):
+        """
+        schedule for week, whole/odd/even
+        """
         result = ''
         for day in range(1, 6):
             result += self.day_from_int(day) + '\n'
@@ -15,6 +24,9 @@ class Schedule:
 
 
     def day_schedule(self, day: int, group_id: int, is_odd_week=None):
+        """
+        schedule for day, whole/odd/even
+        """
         odd_week_str = 'Odd week' if is_odd_week else 'Even week'
         result = self.day_from_int(day) + f'({odd_week_str})' + '\n'
         for row in self._day_schedule(day, group_id, is_odd_week):
@@ -55,20 +67,18 @@ class Schedule:
 
     @staticmethod
     def day_from_int(day):
-        if day == 1:
-            return 'MONDAY'
-        elif day == 2:
-            return 'TUESDAY'
-        elif day == 3:
-            return 'WEDNESDAY'
-        elif day == 4:
-            return 'THURSDAY'
-        elif day == 5:
-            return 'FRIDAY'
-        elif day == 6:
-            return 'SATURDAY'
-        elif day == 7:
-            return 'SUNDAY'
+        """returns string with day name from int"""
+        days = [
+            '',# 1 based
+            'MONDAY',
+            'TUESDAY',
+            'WEDNESDAY',
+            'THURSDAY',
+            'FRIDAY',
+            'SATURDAY',
+            'SUNDAY',
+        ]
+        return days[day]
 
 
     def next_class(self, day, hour, minute, is_odd_week=None):
@@ -105,8 +115,13 @@ class Schedule:
                             )
                         )[0]
 
-                        return (f'Your next class is {classname}({"lecture" if is_lecture else "practice"})' + '\n' +
-                            f'on {self.day_from_int(day_)}, at {time}')
+                        is_lecture_str = "lecture" if is_lecture else "practice"
+
+                        return ('Your next class is %s(%s)\n' % (
+                                classname,
+                                is_lecture_str
+                            ) + f'on {self.day_from_int(day_)}, at {time}'
+                        )
 
 
 if __name__ == '__main__':

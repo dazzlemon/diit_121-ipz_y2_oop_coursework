@@ -11,6 +11,9 @@ from user     import User
 
 
 class CalendarMenu(Button):
+    """
+    MENU TO CHOOSE CALENDAR DAY, callback is <CALENDAR_DAY=YYYY/MM/DD>
+    """
     def __init__(self,
         start: date, finish: date, has_parent: bool, callback: str
     ):
@@ -21,11 +24,11 @@ class CalendarMenu(Button):
 
         self.current_page = 0
 
-    
+
     def callback_args(self) -> str:
         return ''
 
-    
+
     def operation(self, message: Message, command: str, user_info: User):
         keyboard: List[List[InlineKeyboardButton]] = []
 
