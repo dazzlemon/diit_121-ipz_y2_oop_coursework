@@ -46,7 +46,7 @@ class ButtonManager:
             date = datetime.date(int(year), int(month), int(day))
             weekday = date.weekday() + 1
             is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
-            self.schedule.day_schedule(weekday, user.group_id, is_odd_week)
+            return self.schedule.day_schedule(weekday, user.group_id, is_odd_week)
 
         # main_menu.day_menu init
         self.today_button = LeafButton(
@@ -108,12 +108,7 @@ class ButtonManager:
         """
         creates new message with main menu keyboard
         """
-        self.user_db.execute("""REPLACE INTO USER
-                (CURRENT_MENU, MENU_HISTORY, ID)
-            VALUES
-                ('%s', '', %s)""" % (self.main_menu.callback, message.chat_id)
-        )
-        self.user_db.commit()
+        self._update_menu(self.main_menu.callback, '', message.chat_id)
         self.main_menu.operation(
             message,
             self.main_menu.callback,
@@ -193,13 +188,26 @@ class ButtonManager:
                     menu_history.append(current_menu)
                     current_menu = command_str
         menu_history_str = ';'.join(menu_history)
-        self.user_db.execute("""REPLACE INTO USER
-                (CURRENT_MENU, MENU_HISTORY, ID)
-            VALUES
-                ('%s', '%s', %s)""" % (
-                    current_menu, menu_history_str, update.effective_chat.id
-                )
-        )
+        self._update_menu(current_menu, menu_history_str, update.effective_chat.id)
+
+
+    def _update_menu(self, current_menu, menu_history, id_):
+        row = next(self.user_db.execute(
+            f"""SELECT * FROM USER WHERE ID = {id_}"""
+        ), None)
+        if row is None:
+            self.user_db.execute(f"""REPLACE INTO USER
+                    (CURRENT_MENU, MENU_HISTORY, ID)
+                VALUES
+                    ('{current_menu}', '{menu_history}', {id_})"""
+            )
+        else:
+            self.user_db.execute(
+                f"""UPDATE USER
+                    SET CURRENT_MENU = '{current_menu}',
+                        MENU_HISTORY = '{menu_history}'
+                    WHERE ID = {id_}"""
+            )
         self.user_db.commit()
 
 
@@ -212,15 +220,25 @@ class ButtonManager:
                 new_val = "'" + new_val + "'"
             print(f'{varname} = {new_val}')#TODO: DEBUG
 
-            self.user_db.execute("""REPLACE INTO USER
-                    (ID, %s)
-                VALUES
-                    (%s, %s)""" % (
-                        varname,
-                        update.effective_chat.id,
-                        new_val
-                    )
-            )
+            row = next(self.user_db.execute(
+                f"""SELECT * FROM USER WHERE ID = {update.effective_chat.id}"""
+            ), None)
+            if row is None:
+                self.user_db.execute("""REPLACE INTO USER
+                        (ID, %s)
+                    VALUES
+                        (%s, %s)""" % (
+                            varname,
+                            update.effective_chat.id,
+                            new_val
+                        )
+                )
+            else:
+                self.user_db.execute(
+                    f"""UPDATE USER
+                        SET {varname} = {new_val}
+                        WHERE ID = {update.effective_chat.id}"""
+                )
             self.user_db.commit()
 
 
