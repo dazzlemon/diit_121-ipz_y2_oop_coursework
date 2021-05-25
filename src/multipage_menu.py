@@ -46,16 +46,23 @@ class MultiPageMenu(Button):
             )])
 
         nav_buttons: List[InlineKeyboardButton] = []
+
+        empty_button = InlineKeyboardButton(' ', callback_data='pass')
+
         if self.current_page > 0:
             nav_buttons.append(InlineKeyboardButton(
                 '<',
                 callback_data='prev_page'
             ))
-        if self.current_page < len(self.options) / self.options_per_page:
+        else:
+            nav_buttons.append(empty_button)
+        if self.current_page + 1 < len(self.options) / self.options_per_page:
             nav_buttons.append(InlineKeyboardButton(
                 '>',
                 callback_data='next_page'
             ))
+        else:
+            nav_buttons.append(empty_button)
         if nav_buttons != []:
             keyboard.append(nav_buttons)
 

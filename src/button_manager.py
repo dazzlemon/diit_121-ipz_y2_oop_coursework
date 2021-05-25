@@ -197,7 +197,9 @@ class ButtonManager:
             current_menu = upd + '_choice'
             self.current_updater.operation(query.message, None, user_info)
         else:
-            if command_str == 'exit':
+            if command_str == 'pass':
+                pass
+            elif command_str == 'exit':
                 query.delete_message()
             elif command_str == 'back' and menu_history:
                 current_menu = menu_history.pop()
