@@ -38,14 +38,14 @@ class ButtonManager:
 
         def today_schedule(user) -> str:
             day = datetime.datetime.today().weekday() + 1
-            is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
+            is_odd_week = datetime.datetime.today().isocalendar().week % 2 == 1
             return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
         def calendar_day_schedule(user) -> str:
             year, month, day = user.calendar_day.split('/')
             date = datetime.date(int(year), int(month), int(day))
             weekday = date.weekday() + 1
-            is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
+            is_odd_week = date.isocalendar().week % 2 == 1
             return self.schedule.day_schedule(weekday, user.group_id, is_odd_week)
 
         # main_menu.day_menu init
