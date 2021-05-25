@@ -3,7 +3,7 @@ Additional class to choose arguments for LeafButtons(update User state)
 """
 from typing   import List, Tuple
 from telegram import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from button   import Button, Menu
+from button   import Button
 from user     import User
 
 

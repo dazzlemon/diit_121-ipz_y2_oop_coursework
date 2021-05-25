@@ -9,6 +9,7 @@ from user           import User
 from multipage_menu import MultiPageMenu
 from sql            import Schedule
 from telegram       import CallbackQuery, Update
+from calendar_menu  import CalendarMenu
 
 
 class ButtonManager:
@@ -40,6 +41,13 @@ class ButtonManager:
             is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
             return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
+        def calendar_day_schedule(user) -> str:
+            year, month, day = user.calendar_day.split('/')
+            date = datetime.date(year, month, day)
+            weekday = date.weekday()
+            is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
+            self.schedule.day_schedule(weekday, user.group_id, is_odd_week)
+
         # main_menu.day_menu init
         self.today_button = LeafButton(
             'Today', 'today', self.day_menu,
@@ -47,7 +55,8 @@ class ButtonManager:
         )
         self.tomorrow_button = LeafButton('Tomorrow', 'tomorrow', self.day_menu)
         self.calendar_day_button = LeafButton(
-            'Calendar Day', 'calendar_day', self.day_menu
+            'Calendar Day', 'calendar_day_button', self.day_menu,
+            calendar_day_schedule, 'group_id', 'calendar_day'
         )
         self.week_day_menu = Menu('Week Day', 'week_day', self.day_menu)
 
@@ -128,7 +137,6 @@ class ButtonManager:
         # or some weird compression
         query = update.callback_query
         query.answer()
-
         callback_list = query.data.split(';')
 
         command_str_list = list(filter(
@@ -138,7 +146,6 @@ class ButtonManager:
         command_str = command_str_list[0]
 
         update_strs = [update for update in callback_list if '!' in update]
-        update_strs = list(map(lambda str_: str_.replace('!', ''), update_strs))
         new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
         row = next(self.user_db.execute("""SELECT MENU_HISTORY, CURRENT_MENU
@@ -230,6 +237,7 @@ class ButtonManager:
     ):
         upd = update_strs[0]
         update_strs.remove(upd)
+        upd = upd.replace('!', '')
         callback = ';'.join(update_strs) + ';' + command_str
         opts = []
         if upd == 'group_id':
@@ -239,15 +247,20 @@ class ButtonManager:
             for row in rows:
                 id_ = row[0]
                 opts.append((id_, id_))
+            self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
         elif upd == 'teacher_id':
             pass# TODO
         elif upd == 'student_id':
             pass# TODO
         elif upd == 'calendar_day':
-            pass# TODO
+            today = datetime.date.today()
+            next_year = datetime.date(today.year + 1, today.month, today.day)
+            self.current_updater = CalendarMenu(
+                today,
+                next_year
+            )
         elif upd == 'week_day':
             pass# TODO
-        self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
         menu_history.append(current_menu)
         self.current_updater.operation(query.message, None, user_info)
         return upd + '_choice'
