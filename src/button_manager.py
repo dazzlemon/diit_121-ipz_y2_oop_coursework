@@ -7,6 +7,7 @@ from button         import LeafButton, Menu
 from user           import User
 from multipage_menu import MultiPageMenu
 from sql            import Schedule
+from telegram       import CallbackQuery
 
 
 class ButtonManager:
@@ -173,29 +174,9 @@ class ButtonManager:
         user_info = User(self.user_db, update.effective_chat.id)
 
         if update_strs:
-            upd = update_strs[0]
-            update_strs.remove(upd)
-            callback = ';'.join(update_strs) + ';' + command_str
-            opts = []
-            if upd == 'group_id':
-                rows = self.schedule_db.execute("""SELECT DISTINCT GROUP_ID
-                    FROM SCHEDULE""")
-
-                for row in rows:
-                    id_ = row[0]
-                    opts.append((id_, id_))
-            elif upd == 'teacher_id':
-                pass# TODO
-            elif upd == 'student_id':
-                pass# TODO
-            elif upd == 'calendar_day':
-                pass# TODO
-            elif upd == 'week_day':
-                pass# TODO
-            self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
-            menu_history.append(current_menu)
-            current_menu = upd + '_choice'
-            self.current_updater.operation(query.message, None, user_info)
+            current_menu = self._update_handler(
+                update_strs, command_str, menu_history, current_menu, query, user_info
+            )
         else:
             if command_str == 'pass':
                 pass
@@ -231,3 +212,37 @@ class ButtonManager:
                 )
         )
         self.user_db.commit()
+
+
+    def _update_handler(
+        self,
+        update_strs: list,
+        command_str: str,
+        menu_history: list,
+        current_menu: str,
+        query: CallbackQuery,
+        user_info: User
+    ):
+        upd = update_strs[0]
+        update_strs.remove(upd)
+        callback = ';'.join(update_strs) + ';' + command_str
+        opts = []
+        if upd == 'group_id':
+            rows = self.schedule_db.execute("""SELECT DISTINCT GROUP_ID
+                FROM SCHEDULE""")
+
+            for row in rows:
+                id_ = row[0]
+                opts.append((id_, id_))
+        elif upd == 'teacher_id':
+            pass# TODO
+        elif upd == 'student_id':
+            pass# TODO
+        elif upd == 'calendar_day':
+            pass# TODO
+        elif upd == 'week_day':
+            pass# TODO
+        self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
+        menu_history.append(current_menu)
+        self.current_updater.operation(query.message, None, user_info)
+        return upd + '_choice'
