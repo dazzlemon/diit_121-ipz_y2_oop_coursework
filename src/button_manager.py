@@ -3,11 +3,12 @@ Button manager for timetable bot, using button module
 """
 
 import datetime
+from typing         import List
 from button         import LeafButton, Menu
 from user           import User
 from multipage_menu import MultiPageMenu
 from sql            import Schedule
-from telegram       import CallbackQuery
+from telegram       import CallbackQuery, Update
 
 
 class ButtonManager:
@@ -150,26 +151,7 @@ class ButtonManager:
         menu_history = (menu_history_str or '').split(';')
 
         if new_val_strs:
-            for new_val_str in new_val_strs:
-                varname, new_val = new_val_str.split('=')
-                varname = varname.upper()
-
-                row = next(self.user_db.execute(
-                    """SELECT %s FROM USER""" % varname
-                ))
-                if row[0] is str:
-                    new_val = "'" + new_val + "'"
-
-                self.user_db.execute("""REPLACE INTO USER
-                        (ID, %s)
-                    VALUES
-                        (%s, %s)""" % (
-                            varname,
-                            update.effective_chat.id,
-                            new_val
-                        )
-                )
-                self.user_db.commit()
+            self._new_val_handler(new_val_strs, update)
 
         user_info = User(self.user_db, update.effective_chat.id)
 
@@ -214,11 +196,34 @@ class ButtonManager:
         self.user_db.commit()
 
 
+    def _new_val_handler(self, new_val_strs: List[str], update: Update):
+        for new_val_str in new_val_strs:
+            varname, new_val = new_val_str.split('=')
+            varname = varname.upper()
+
+            row = next(self.user_db.execute(
+                """SELECT %s FROM USER""" % varname
+            ))
+            if row[0] is str:
+                new_val = "'" + new_val + "'"
+
+            self.user_db.execute("""REPLACE INTO USER
+                    (ID, %s)
+                VALUES
+                    (%s, %s)""" % (
+                        varname,
+                        update.effective_chat.id,
+                        new_val
+                    )
+            )
+            self.user_db.commit()
+
+
     def _update_handler(
         self,
-        update_strs: list,
+        update_strs: List[str],
         command_str: str,
-        menu_history: list,
+        menu_history: List[str],
         current_menu: str,
         query: CallbackQuery,
         user_info: User
