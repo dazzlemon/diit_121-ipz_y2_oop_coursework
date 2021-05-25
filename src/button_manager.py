@@ -3,13 +3,14 @@ Button manager for timetable bot, using button module
 """
 
 import datetime
-from typing         import List
-from telegram       import CallbackQuery, Update
-from button         import LeafButton, Menu
-from user           import User
-from multipage_menu import MultiPageMenu
-from sql            import Schedule
-from calendar_menu  import CalendarMenu
+from typing          import List
+from telegram        import CallbackQuery, Update
+from button          import LeafButton, Menu
+from user            import User
+from multipage_menu  import MultiPageMenu
+from sql             import Schedule
+from calendar_menu   import CalendarMenu
+from user_db_manager import UserDbManager
 
 
 class ButtonManager:
@@ -17,7 +18,7 @@ class ButtonManager:
     Button manager for timetable bot, using button module
     """
     def __init__(self, user_db, schedule_db):
-        self.user_db = user_db
+        self.user_db = UserDbManager(user_db)
         self.schedule_db = schedule_db
         self.main_menu = Menu('Menu', 'menu')
 
@@ -113,7 +114,7 @@ class ButtonManager:
             message,
             self.main_menu.callback,
             User(
-                self.user_db,
+                self.user_db.sql_conn,
                 message.chat_id
             )
         )
@@ -143,18 +144,13 @@ class ButtonManager:
         update_strs = [update for update in callback_list if '!' in update]
         new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
-        row = next(self.user_db.execute("""SELECT MENU_HISTORY, CURRENT_MENU
-                FROM USER
-                WHERE ID = %s""" % update.effective_chat.id))
-        menu_history_str = row[0]
-        current_menu = row[1]
-
+        menu_history_str, current_menu = self.user_db.menu_data(update.effective_chat.id)
         menu_history = (menu_history_str or '').split(';')
 
         if new_val_strs:
             self._new_val_handler(new_val_strs, update)
 
-        user_info = User(self.user_db, update.effective_chat.id)
+        user_info = User(self.user_db.sql_conn, update.effective_chat.id)
 
         if update_strs:
             self._update_handler(
@@ -205,23 +201,7 @@ class ButtonManager:
 
 
     def _update_menu(self, current_menu, menu_history, id_):
-        row = next(self.user_db.execute(
-            f"""SELECT * FROM USER WHERE ID = {id_}"""
-        ), None)
-        if row is None:
-            self.user_db.execute(f"""REPLACE INTO USER
-                    (CURRENT_MENU, MENU_HISTORY, ID)
-                VALUES
-                    ('{current_menu}', '{menu_history}', {id_})"""
-            )
-        else:
-            self.user_db.execute(
-                f"""UPDATE USER
-                    SET CURRENT_MENU = '{current_menu}',
-                        MENU_HISTORY = '{menu_history}'
-                    WHERE ID = {id_}"""
-            )
-        self.user_db.commit()
+        self.user_db.update_menu(current_menu, menu_history, id_)
 
 
     def _new_val_handler(self, new_val_strs: List[str], update: Update):
@@ -231,27 +211,7 @@ class ButtonManager:
 
             if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
-
-            row = next(self.user_db.execute(
-                f"""SELECT * FROM USER WHERE ID = {update.effective_chat.id}"""
-            ), None)
-            if row is None:
-                self.user_db.execute("""REPLACE INTO USER
-                        (ID, %s)
-                    VALUES
-                        (%s, %s)""" % (
-                            varname,
-                            update.effective_chat.id,
-                            new_val
-                        )
-                )
-            else:
-                self.user_db.execute(
-                    f"""UPDATE USER
-                        SET {varname} = {new_val}
-                        WHERE ID = {update.effective_chat.id}"""
-                )
-            self.user_db.commit()
+            self.user_db.update_or_replace(varname, update.effective_chat.id, new_val)
 
 
     def _update_handler(
