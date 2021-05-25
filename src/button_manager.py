@@ -43,8 +43,8 @@ class ButtonManager:
 
         def calendar_day_schedule(user) -> str:
             year, month, day = user.calendar_day.split('/')
-            date = datetime.date(year, month, day)
-            weekday = date.weekday()
+            date = datetime.date(int(year), int(month), int(day))
+            weekday = date.weekday() + 1
             is_odd_week = datetime.datetime.today().isocalendar()[1] % 2 == 1
             self.schedule.day_schedule(weekday, user.group_id, is_odd_week)
 
@@ -138,7 +138,7 @@ class ButtonManager:
         query = update.callback_query
         query.answer()
         callback_list = query.data.split(';')
-
+        print(f'cvallback = {query.data}')#TODO DEBGU
         command_str_list = list(filter(
                 lambda str_: '!' not in str_ and '=' not in str_ and str_ != '',
                 callback_list
@@ -208,11 +208,9 @@ class ButtonManager:
             varname, new_val = new_val_str.split('=')
             varname = varname.upper()
 
-            row = next(self.user_db.execute(
-                """SELECT %s FROM USER""" % varname
-            ))
-            if row[0] is str:
+            if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
+            print(f'{varname} = {new_val}')#TODO: DEBUG
 
             self.user_db.execute("""REPLACE INTO USER
                     (ID, %s)
@@ -247,7 +245,9 @@ class ButtonManager:
             for row in rows:
                 id_ = row[0]
                 opts.append((id_, id_))
-            self.current_updater = MultiPageMenu(opts, upd.upper(), callback, True)
+            self.current_updater = MultiPageMenu(
+                opts, upd.upper(), callback, True
+            )
         elif upd == 'teacher_id':
             pass# TODO
         elif upd == 'student_id':
@@ -258,9 +258,11 @@ class ButtonManager:
             self.current_updater = CalendarMenu(
                 today,
                 next_year,
-                True
+                True,
+                callback
             )
         elif upd == 'week_day':
             pass# TODO
-        menu_history.append(current_menu)
+        if current_menu not in menu_history:
+            menu_history.append(current_menu)
         self.current_updater.operation(query.message, None, user_info)

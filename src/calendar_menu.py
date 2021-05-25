@@ -11,10 +11,13 @@ from telegram import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 
 class CalendarMenu(Button):
-    def __init__(self, start: date, finish: date, has_parent):
+    def __init__(self,
+        start: date, finish: date, has_parent: bool, callback: str
+    ):
         self.start = start
         self.finish = finish
         self.has_parent = has_parent
+        self.callback = callback
 
         self.current_page = 0
 
@@ -55,9 +58,9 @@ class CalendarMenu(Button):
                 else:
                     row.append(InlineKeyboardButton(
                         day,
-                        callback_data = 'CALENDAR_DAY=%s/%s/%s' % (
+                        callback_data='CALENDAR_DAY=%s/%s/%s' % (
                             year, month, day
-                        )
+                        ) + ';' + self.callback
                     ))
             keyboard.append(row)
         #Last row - Buttons
