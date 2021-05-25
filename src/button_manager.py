@@ -133,7 +133,7 @@ class ButtonManager:
         query = update.callback_query
         query.answer()
         callback_list = query.data.split(';')
-        print(f'cvallback = {query.data}')#TODO DEBGU
+
         command_str_list = list(filter(
                 lambda str_: '!' not in str_ and '=' not in str_ and str_ != '',
                 callback_list
@@ -146,7 +146,6 @@ class ButtonManager:
         row = next(self.user_db.execute("""SELECT MENU_HISTORY, CURRENT_MENU
                 FROM USER
                 WHERE ID = %s""" % update.effective_chat.id))
-
         menu_history_str = row[0]
         current_menu = row[1]
 
@@ -162,7 +161,7 @@ class ButtonManager:
                 update_strs, command_str, menu_history, current_menu, query, user_info
             )
         else:
-            self.default_handler(
+            current_menu = self.default_handler(
                 command_str, query, menu_history, user_info, current_menu
             )
         menu_history_str = ';'.join(menu_history)
@@ -228,7 +227,6 @@ class ButtonManager:
 
             if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
-            print(f'{varname} = {new_val}')#TODO: DEBUG
 
             row = next(self.user_db.execute(
                 f"""SELECT * FROM USER WHERE ID = {update.effective_chat.id}"""
