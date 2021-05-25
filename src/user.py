@@ -2,6 +2,7 @@
 user dataclass
 """
 
+import datetime
 from dataclasses import dataclass
 
 @dataclass
@@ -14,3 +15,16 @@ class User:
     student_id: int
     calendar_day: str
     week_day: int
+
+
+    def weekday_from_calendar_day(self):
+        return self.date_from_calendar_day().weekday() + 1
+
+
+    def is_odd_week_from_calendar_day(self):
+        return self.date_from_calendar_day().isocalendar().week % 2 == 1
+
+
+    def date_from_calendar_day(self):
+        year, month, day = self.calendar_day.split('/')
+        return datetime.date(int(year), int(month), int(day))
