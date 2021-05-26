@@ -29,9 +29,9 @@ class Button(ABC):
         self._parent = parent
 
 
-    @abstractmethod
     def callback_args(self) -> str:
         """returns additional data to be added to callback"""
+        return ''
 
 
     @abstractmethod
@@ -60,12 +60,11 @@ class LeafButton(Button):
         arg1name: str=None, arg2name: str=None
     ):
         """added to parent automatically"""
-        self.text = text
+        self.text     = text
         self.callback = callback
-        self.handler = handler
-        self.arg1name=arg1name
-        self.arg2name=arg2name
-
+        self.handler  = handler
+        self.arg1name = arg1name
+        self.arg2name = arg2name
         if parent is not None:
             parent.add(self)
 
@@ -109,10 +108,9 @@ class Menu(Button):
         parent: Menu=None,
     ) -> None:
         self._children: List[List[Button]] = [[]]
-        self.parent = parent
-        self.text = text
+        self.parent   = parent
+        self.text     = text
         self.callback = callback
-
         if parent is not None:
             parent.add(self)
 
@@ -132,10 +130,6 @@ class Menu(Button):
         """go to the next row(if current row is empty does nothing)"""
         if self._children[-1]:
             self._children.append([])
-
-
-    def callback_args(self) -> str:
-        return ''
 
 
     def operation(
@@ -176,6 +170,5 @@ class Menu(Button):
         else:
             for row in self._children:
                 for button in row:
-                    result = button.operation(message, command, user_info)
-                    if result:
+                    if button.operation(message, command, user_info):
                         return True
