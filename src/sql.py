@@ -18,7 +18,6 @@ class Schedule:
         """
         result = ''
         for day in range(1, 6):
-            result += self.day_from_int(day) + '\n'
             result += self.day_schedule(day, group_id, is_odd_week) + '\n'
         return result
 
@@ -47,7 +46,7 @@ class Schedule:
             type_ = 'lecture' if is_lecture else 'practice'
             result += f'{time} - "{classname}"; {type_}'
             if is_odd_week is None and class_odd_week is not None:
-                result += f'({"Odd" if class_odd_week == "1" else "Even"})'
+                result += f'({"Odd" if class_odd_week == 1 else "Even"})'
             result += '\n'
         return result + '\n'
 
