@@ -48,8 +48,13 @@ class UserDbManager:
         return row is not None
 
 
-    def insert_or_replace(self, varname, id_, new_val):
+    def insert_or_replace(self, varname: str, id_: int, new_val: str):
         """inserts or updates varname with new_val"""
+        print()
+        print(varname)
+        print(id_)
+        print(new_val)
+        print()
         if self.is_row_exists(id_):
             self.sql_conn.execute(
                 f"""UPDATE USER

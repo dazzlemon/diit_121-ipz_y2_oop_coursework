@@ -59,6 +59,12 @@ class ButtonManager:
                 user.is_odd_week_from_calendar_day()
             )
 
+        def whole_week_day_schedule(user) -> str:
+            return self.schedule.day_schedule(
+                user.week_day,
+                user.group_id
+            )
+
         # main_menu.day_menu init
         self.today_button = LeafButton(
             'Today', 'today', self.day_menu,
@@ -72,11 +78,12 @@ class ButtonManager:
             'Calendar Day', 'calendar_day_button', self.day_menu,
             calendar_day_schedule, 'group_id', 'calendar_day'
         )
-        self.week_day_menu = Menu('Week Day', 'week_day', self.day_menu)
+        self.week_day_menu = Menu('Week Day', 'weekday_button', self.day_menu)
 
         # main_menu.day_menu.week_day_menu init
         self.wholeweek_day_button = LeafButton(
-            'Whole Week(Odd & Even) Day', 'whole_week_day', self.week_day_menu
+            'Whole Week(Odd & Even) Day', 'whole_week_day', self.week_day_menu,
+            whole_week_day_schedule, 'group_id', 'week_day'
         )
         self.oddweek_day_button = LeafButton(
             'Odd Week Day', 'odd_week_day', self.week_day_menu
@@ -255,7 +262,18 @@ class ButtonManager:
                 callback
             )
         elif upd == 'week_day':
-            pass# TODO
+            opts = [
+                ('Monday', '1'),
+                ('Tuesday', '2'),
+                ('Wednesday', '3'),
+                ('Thursday', '4'),
+                ('Friday', '5'),
+                ('Saturday', '6'),
+                ('Sunday', '7'),
+            ]
+            self.current_updater = MultiPageMenu(
+                opts, upd.upper(), callback, True
+            )
         if current_menu not in menu_history:
             menu_history.append(current_menu)
         self.current_updater.operation(query.message, None, user_info)

@@ -27,7 +27,9 @@ class Schedule:
         """
         schedule for day, whole/odd/even
         """
-        odd_week_str = 'Odd week' if is_odd_week else 'Even week'
+        odd_week_str = 'Whole week'
+        if is_odd_week is not None:
+            odd_week_str = 'Odd week' if is_odd_week else 'Even week'
         result = self.day_from_int(day) + f'({odd_week_str})' + '\n'
         for row in self._day_schedule(day, group_id, is_odd_week):
             time = row[0]
