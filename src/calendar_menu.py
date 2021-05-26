@@ -5,8 +5,7 @@ Menu to choose calendar day
 import calendar
 from datetime       import date
 from typing         import List
-from telegram       import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from user           import User
+from telegram       import InlineKeyboardButton
 from multipage_menu import MultiPageMenu
 
 
@@ -17,32 +16,17 @@ class CalendarMenu(MultiPageMenu):
     def __init__(self,
         start: date, finish: date, has_parent: bool, callback: str
     ):
+        MultiPageMenu.__init__(self, has_parent)
         self.start = start
         self.finish = finish
-        self._has_parent = has_parent
         self.callback = callback
 
         self.current_page = 0
 
 
-    @property
-    def has_parent(self) -> bool:
-        return self._has_parent
-
-
     def max_page(self) -> int:
         return ((self.finish.year - self.start.year) * 12
              + (self.finish.month - self.start.month))
-
-
-    @property
-    def current_page(self) -> int:
-        return self._current_page
-
-
-    @current_page.setter
-    def current_page(self, val: int):
-        self._current_page = val
 
 
     def keyboard(self) -> List[List[InlineKeyboardButton]]:

@@ -8,22 +8,31 @@ from button   import Button
 from user     import User
 
 class MultiPageMenu(Button):
+    """Multi page menu with scrolling"""
+    def __init__(self, has_parent):
+        self._has_parent = has_parent
+
+
     @property
-    @abstractmethod
     def has_parent(self) -> bool:
         """Needed to check if 'Back' button is needed"""
+        return self._has_parent
+
+
+    @property
+    def current_page(self) -> int:
+        """current page"""
+        return self._current_page
+
+
+    @current_page.setter
+    def current_page(self, val: int):
+        self._current_page = val
 
 
     @abstractmethod
     def max_page(self) -> int:
         """maxpage"""
-
-
-    @property
-    @abstractmethod
-    def current_page(self) -> int:
-        """current_page"""
-
 
     @abstractmethod
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
@@ -95,32 +104,17 @@ class MultiPageListMenu(MultiPageMenu):
         has_parent: bool,
         options_per_page: int=10
     ):
+        MultiPageMenu.__init__(self, has_parent)
         self.options = options
         self.options_per_page = options_per_page
         self.arg_name = arg_name
         self.callback = callback
-        self._has_parent = has_parent
 
         self._current_page = 0
 
 
-    @property
-    def has_parent(self) -> bool:
-        return self._has_parent
-
-
     def max_page(self) -> int:
         return len(self.options) / self.options_per_page
-
-
-    @property
-    def current_page(self) -> int:
-        return self._current_page
-
-
-    @current_page.setter
-    def current_page(self, val: int):
-        self._current_page = val
 
 
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
