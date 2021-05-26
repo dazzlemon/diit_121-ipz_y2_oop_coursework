@@ -115,39 +115,43 @@ class Menu(Button):
 
     def operation(self, message: Message, command: str, user: User) -> bool:
         """
-        Print all Children in the order they were added, first row wise,
-        then in row
-        + 'Back if has parent', callback = 'back'
-        + 'Exit', callback = 'exit'
+        Tries to handle command or delegates it to self._children
         """
         if command == self.callback:
-            keyboard = list(map(
-                lambda row: list(map(
-                    lambda button: InlineKeyboardButton(
-                        button.text, callback_data=(button.callback +
-                        button.callback_args())
-                    ),
-                    row
-                )),
-                self._children
-            ))
-
-            if self.has_parent:
-                keyboard.append([])
-                keyboard[-1].append(
-                    InlineKeyboardButton('Back', callback_data='back')
-                )
-
-            keyboard.append([])
-            keyboard[-1].append(
-                InlineKeyboardButton('Exit', callback_data='exit')
-            )
-
-            markup = InlineKeyboardMarkup(keyboard)
-            message.edit_reply_markup(reply_markup=markup)
+            self.print_menu(message)
             return True
         else:
             for row in self._children:
                 for button in row:
                     if button.operation(message, command, user):
                         return True
+
+
+    def print_menu(self, message):
+        """
+        Print all Children in the order they were added, first row wise,
+        then in row
+        + 'Back if has parent', callback = 'back'
+        + 'Exit', callback = 'exit'
+        """
+        keyboard = list(map(
+            lambda row: list(map(
+                lambda button: InlineKeyboardButton(
+                    button.text, callback_data=(button.callback +
+                    button.callback_args())
+                ),
+                row
+            )),
+            self._children
+        ))
+
+        if self.has_parent:
+            keyboard.append(
+                [InlineKeyboardButton('Back', callback_data='back')]
+            )
+        keyboard.append(
+            [InlineKeyboardButton('Exit', callback_data='exit')]
+        )
+
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
