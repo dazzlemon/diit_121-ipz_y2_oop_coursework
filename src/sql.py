@@ -35,6 +35,7 @@ class Schedule:
             time = row[0]
             is_lecture = row[1]
             class_id = row[2]
+            class_odd_week = row[3]
 
             classname = next(
                 self.sql_conn.execute(
@@ -44,7 +45,10 @@ class Schedule:
             )[0]
 
             type_ = 'lecture' if is_lecture else 'practice'
-            result += f'{time} - "{classname}"; {type_}' + '\n'
+            result += f'{time} - "{classname}"; {type_}'
+            if is_odd_week is None and class_odd_week is not None:
+                result += f'({"Odd" if class_odd_week == "1" else "Even"})'
+            result += '\n'
         return result + '\n'
 
 
@@ -55,7 +59,7 @@ class Schedule:
             week_constraint = f'AND (ODD_WEEK = {boolean} OR ODD_WEEK IS NULL)'
 
         return self.sql_conn.execute(
-            '''SELECT TIME, IS_LECTURE, CLASS_ID
+            '''SELECT TIME, IS_LECTURE, CLASS_ID, ODD_WEEK
             from SCHEDULE
             where DAY = %s
             %s AND GROUP_ID = %s
