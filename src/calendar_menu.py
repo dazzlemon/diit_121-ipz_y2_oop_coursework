@@ -51,6 +51,9 @@ class CalendarMenu(Button):
 
     @staticmethod
     def weekdays_names():
+        """
+        returns row of buttons with weekday names with empty callbacks('pass')
+        """
         row = []
         for day in ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]:
             row.append(InlineKeyboardButton(day, callback_data='pass'))
@@ -112,4 +115,5 @@ class CalendarMenu(Button):
 
     @staticmethod
     def empty_button():
+        """returns button with no text and 'pass' callback"""
         return InlineKeyboardButton(' ', callback_data='pass')
