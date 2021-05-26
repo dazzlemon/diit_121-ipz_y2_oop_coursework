@@ -85,22 +85,31 @@ class CalendarMenu(Button):
 
 
     def _add_page_nav_buttons(self, keyboard):
-        nav_buttons: List[InlineKeyboardButton] = []
-        empty_button = InlineKeyboardButton(' ', callback_data='pass')
-        if self.current_page > 0:
-            nav_buttons.append(InlineKeyboardButton(
-                '<',
-                callback_data='prev_page'
-            ))
-        else:
-            nav_buttons.append(empty_button)
+        keyboard.append([self._prev_button(), self._next_button()])
+
+
+    def _next_button(self):
         diff = ((self.finish.year - self.start.year) * 12
              + (self.finish.month - self.start.month))
         if self.current_page + 1 < diff:
-            nav_buttons.append(InlineKeyboardButton(
+            return InlineKeyboardButton(
                 '>',
                 callback_data='next_page'
-            ))
+            )
         else:
-            nav_buttons.append(empty_button)
-        keyboard.append(nav_buttons)
+            return self.empty_button()
+
+
+    def _prev_button(self):
+        if self.current_page > 0:
+            return InlineKeyboardButton(
+                '<',
+                callback_data='prev_page'
+            )
+        else:
+            return self.empty_button()
+
+
+    @staticmethod
+    def empty_button():
+        return InlineKeyboardButton(' ', callback_data='pass')
