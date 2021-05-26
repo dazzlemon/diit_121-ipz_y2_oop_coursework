@@ -20,10 +20,9 @@ class ButtonManager:
     def __init__(self, user_db, schedule_db):
         self.user_db = UserDbManager(user_db)
         self.schedule_db = schedule_db
-        self.main_menu = Menu('Menu', 'menu')
-
         self.current_updater = None
         self.schedule = Schedule(schedule_db)
+        self.main_menu = Menu('Menu', 'menu')
 
         # main_menu init
         self.day_menu = Menu('Day', 'day', self.main_menu)
@@ -37,86 +36,47 @@ class ButtonManager:
         self.student_menu = Menu('Student', 'student', self.main_menu)
         self.main_menu.next_row()
 
-        def today_schedule(user) -> str:
-            day = datetime.datetime.today().weekday() + 1
-            if day > 7:
-                day -= 7
-            is_odd_week = datetime.datetime.today().isocalendar().week % 2 == 1
-            return self.schedule.day_schedule(day, user.group_id, is_odd_week)
-
-        def tomorrow_schedule(user) -> str:
-            day = datetime.datetime.today().weekday() + 2
-            if day > 7:
-                day -= 7
-            is_odd_week = (datetime.datetime.today()
-                + datetime.timedelta(days=1)).isocalendar().week % 2 == 1
-            return self.schedule.day_schedule(day, user.group_id, is_odd_week)
-
-        def calendar_day_schedule(user) -> str:
-            return self.schedule.day_schedule(
-                user.weekday_from_calendar_day(),
-                user.group_id,
-                user.is_odd_week_from_calendar_day()
-            )
-
-        def week_day_schedule(is_odd_week: bool):
-            def wds(user) -> str:
-                return self.schedule.day_schedule(
-                user.week_day,
-                user.group_id,
-                is_odd_week
-            )
-            return wds
-
-        def week_schedule(is_odd_week: bool):
-            def ws(user) -> str:
-                return self.schedule.week_schedule(
-                    user.group_id,
-                    is_odd_week
-                )
-            return ws
-
         # main_menu.day_menu init
         self.today_button = LeafButton(
             'Today', 'today', self.day_menu,
-            today_schedule, 'group_id'
+            self.today_schedule, 'group_id'
         )
         self.tomorrow_button = LeafButton(
             'Tomorrow', 'tomorrow', self.day_menu,
-            tomorrow_schedule, 'group_id'
+            self.tomorrow_schedule, 'group_id'
         )
         self.calendar_day_button = LeafButton(
             'Calendar Day', 'calendar_day_button', self.day_menu,
-            calendar_day_schedule, 'group_id', 'calendar_day'
+            self.calendar_day_schedule, 'group_id', 'calendar_day'
         )
         self.week_day_menu = Menu('Week Day', 'weekday_button', self.day_menu)
 
         # main_menu.day_menu.week_day_menu init
         self.wholeweek_day_button = LeafButton(
             'Whole Week(Odd & Even) Day', 'whole_week_day', self.week_day_menu,
-            week_day_schedule(None), 'group_id', 'week_day'
+            self.week_day_schedule(None), 'group_id', 'week_day'
         )
         self.oddweek_day_button = LeafButton(
             'Odd Week Day', 'odd_week_day', self.week_day_menu,
-            week_day_schedule(True), 'group_id', 'week_day'
+            self.week_day_schedule(True), 'group_id', 'week_day'
         )
         self.evenweek_day_button = LeafButton(
-            'Even Week Day', 'even_week_day', self.week_day_menu, 
-            week_day_schedule(False), 'group_id', 'week_day'
+            'Even Week Day', 'even_week_day', self.week_day_menu,
+            self.week_day_schedule(False), 'group_id', 'week_day'
         )
 
         # main_menu.week_menu init
         self.whole_week_button = LeafButton(
             'Whole Week(Odd & Even)', 'whole_week', self.week_menu,
-            week_schedule(None), 'group_id'
+            self.week_schedule(None), 'group_id'
         )
         self.odd_week_button = LeafButton(
             'Odd Week', 'odd_week', self.week_menu,
-            week_schedule(True), 'group_id'
+            self.week_schedule(True), 'group_id'
         )
         self.even_week_button = LeafButton(
             'Even Week', 'even_week', self.week_menu,
-            week_schedule(False), 'group_id'
+            self.week_schedule(False), 'group_id'
         )
 
         # main_menu.group_menu init
@@ -139,6 +99,55 @@ class ButtonManager:
         self.student_info_button = LeafButton(
             'Info about student', 'student_info', self.student_menu
         )
+
+
+    def today_schedule(self, user) -> str:
+        """schedule for today from underlying database(self.schedule)"""
+        day = datetime.datetime.today().weekday() + 1
+        if day > 7:
+            day -= 7
+        is_odd_week = datetime.datetime.today().isocalendar().week % 2 == 1
+        return self.schedule.day_schedule(day, user.group_id, is_odd_week)
+
+
+    def tomorrow_schedule(self, user) -> str:
+        """schedule for tomorrow from underlying database(self.schedule)"""
+        day = datetime.datetime.today().weekday() + 2
+        if day > 7:
+            day -= 7
+        is_odd_week = (datetime.datetime.today()
+            + datetime.timedelta(days=1)).isocalendar().week % 2 == 1
+        return self.schedule.day_schedule(day, user.group_id, is_odd_week)
+
+
+    def calendar_day_schedule(self, user) -> str:
+        """schedule for calendar day from underlying database(self.schedule)"""
+        return self.schedule.day_schedule(
+            user.weekday_from_calendar_day(),
+            user.group_id,
+            user.is_odd_week_from_calendar_day()
+        )
+
+
+    def week_day_schedule(self, is_odd_week: bool):
+        """schedule for week day from underlying database(self.schedule)"""
+        def wds(user) -> str:
+            return self.schedule.day_schedule(
+            user.week_day,
+            user.group_id,
+            is_odd_week
+        )
+        return wds
+
+
+    def week_schedule(self, is_odd_week: bool):
+        """schedule for week from underlying database(self.schedule)"""
+        def week_sch(user) -> str:
+            return self.schedule.week_schedule(
+                user.group_id,
+                is_odd_week
+            )
+        return week_sch
 
 
     def print_main_menu(self, message):
@@ -170,7 +179,9 @@ class ButtonManager:
         update_strs = [update for update in callback_list if '!' in update]
         new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
-        menu_history_str, current_menu = self.user_db.menu_data(update.effective_chat.id)
+        menu_history_str, current_menu = self.user_db.menu_data(
+            update.effective_chat.id
+        )
         menu_history = (menu_history_str or '').split(';')
 
         if new_val_strs:
@@ -180,14 +191,17 @@ class ButtonManager:
 
         if update_strs:
             self._update_handler(
-                update_strs, command_str, menu_history, current_menu, query, user_info
+                update_strs, command_str, menu_history,
+                current_menu, query, user_info
             )
         else:
             current_menu = self._default_handler(
                 command_str, query, menu_history, user_info, current_menu
             )
         menu_history_str = ';'.join(menu_history)
-        self._update_menu(current_menu, menu_history_str, update.effective_chat.id)
+        self._update_menu(
+            current_menu, menu_history_str, update.effective_chat.id
+        )
 
 
     def _default_handler(
@@ -237,7 +251,9 @@ class ButtonManager:
 
             if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
-            self.user_db.insert_or_replace(varname, update.effective_chat.id, new_val)
+            self.user_db.insert_or_replace(
+                varname, update.effective_chat.id, new_val
+            )
 
 
     def _update_handler(
