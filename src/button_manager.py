@@ -201,37 +201,29 @@ class ButtonManager:
 
     def _default_handler(
         self,
-        command_str: str, query: CallbackQuery, menu_history: List[str],
+        command: str, query: CallbackQuery, menu_history: List[str],
         user_info: User, current_menu: str
     ):
         """
         Handles callbacks that weren't handled by update or new val handlers,
         these are either built-in callbacks or menu buttons
         """
-        if command_str == 'pass':
+        if command == 'pass':
             pass
-        elif command_str == 'exit':
+        elif command == 'exit':
             query.delete_message()
-        elif command_str == 'back' and menu_history:
+        elif command == 'back' and menu_history:
             current_menu = menu_history.pop()
-            self.main_menu.operation(
-                query.message, current_menu, user_info
-            )
-        elif command_str == 'next_page' and self.current_updater is not None:
+            self.main_menu.operation(query.message, current_menu, user_info)
+        elif command == 'next_page' and self.current_updater is not None:
             self.current_updater.current_page += 1
-            self.current_updater.operation(
-                query.message, command_str, user_info
-            )
-        elif command_str == 'prev_page' and self.current_updater is not None:
+            self.current_updater.operation(query.message, command, user_info)
+        elif command == 'prev_page' and self.current_updater is not None:
             self.current_updater.current_page -= 1
-            self.current_updater.operation(
-                query.message, command_str, user_info
-            )
-        elif self.main_menu.operation(
-            query.message, command_str, user_info
-        ):
+            self.current_updater.operation(query.message, command, user_info)
+        elif self.main_menu.operation(query.message, command, user_info):
             menu_history.append(current_menu)
-            current_menu = command_str
+            current_menu = command
         return current_menu
 
 
