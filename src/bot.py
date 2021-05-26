@@ -12,6 +12,15 @@ from telegram.ext import (Updater,
                          CallbackQueryHandler)
 from user         import User
 
+
+@dataclass
+class Command:
+    """TELEGRAM BOT COMMAND HANDLER"""
+    keyword: str
+    handler: Callable[[User], str]
+    description: str
+
+
 class Bot:
     """
     TELEGRAM BOT
@@ -69,10 +78,4 @@ class Bot:
         self._updater.start_polling()
 
 
-@dataclass
-class Command:
-    """TELEGRAM BOT COMMAND HANDLER"""
-    keyword: str
-    handler: Callable[[User], str]
-    description: str
         
