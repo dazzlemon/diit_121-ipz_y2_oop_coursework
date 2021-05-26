@@ -168,21 +168,11 @@ class ButtonManager:
         """
         query = update.callback_query
         query.answer()
-        callback_list = query.data.split(';')
 
-        command_str_list = list(filter(
-                lambda str_: '!' not in str_ and '=' not in str_ and str_ != '',
-                callback_list
-        ))
-        command_str = command_str_list[0]
-
-        update_strs = [update for update in callback_list if '!' in update]
-        new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
-
+        command_str, update_strs, new_val_strs = self._parse_callback(query.data)
         menu_history, current_menu = self.user_db.menu_data(
             update.effective_chat.id
         )
-
         if new_val_strs:
             self._new_val_handler(new_val_strs, update)
 
@@ -199,6 +189,18 @@ class ButtonManager:
         self._update_menu(
             current_menu, menu_history, update.effective_chat.id
         )
+
+
+    @staticmethod
+    def _parse_callback(callback_str: str):
+        callback_list = callback_str.split(';')
+        command_str = next(filter(
+                lambda str_: '!' not in str_ and '=' not in str_ and str_ != '',
+                callback_list
+        ))
+        update_strs = [update for update in callback_list if '!' in update]
+        new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
+        return command_str, update_strs, new_val_strs
 
 
     def _default_handler(
