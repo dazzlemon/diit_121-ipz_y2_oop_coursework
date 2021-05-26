@@ -3,7 +3,9 @@ MAIN
 """
 
 import sqlite3
-from bot import Bot, Command
+from telegram       import Update
+from telegram.ext   import CallbackContext
+from bot            import Bot, Command
 from button_manager import ButtonManager
 
 
@@ -14,7 +16,7 @@ if __name__ == '__main__':
     button_mgr = ButtonManager(users_db, schedule_db)
 
 
-    def start(update, context):
+    def start(update: Update, context: CallbackContext):
         """/start handler"""
         descriptions = ''
         for command in commands:
@@ -30,7 +32,7 @@ if __name__ == '__main__':
     ))
 
 
-    def menu_handler(update, _context):
+    def menu_handler(update: Update, _context: CallbackContext):
         """
         main menu
         """

@@ -4,11 +4,13 @@ Button manager for timetable bot, using button module
 
 import datetime
 from typing               import List
-from telegram             import CallbackQuery
+from sqlite3              import Connection
+from telegram             import CallbackQuery, Message, Update
+from telegram.ext         import CallbackContext
 from button               import LeafButton, ListMenu
 from user                 import User
 from multipage_list_menu  import MultiPageListMenu
-from sql                  import Schedule
+from schedule             import Schedule
 from calendar_menu        import CalendarMenu
 from user_db_manager      import UserDbManager
 
@@ -17,7 +19,7 @@ class ButtonManager:
     """
     Button manager for timetable bot, using button module
     """
-    def __init__(self, user_db, schedule_db):
+    def __init__(self, user_db: Connection, schedule_db: Connection):
         self.user_db = UserDbManager(user_db)
         self.schedule_db = schedule_db
         self.current_updater = None
@@ -101,7 +103,7 @@ class ButtonManager:
         )
 
 
-    def today_schedule(self, user) -> str:
+    def today_schedule(self, user: User) -> str:
         """schedule for today from underlying database(self.schedule)"""
         day = datetime.datetime.today().weekday() + 1
         if day > 7:
@@ -110,7 +112,7 @@ class ButtonManager:
         return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
 
-    def tomorrow_schedule(self, user) -> str:
+    def tomorrow_schedule(self, user: User) -> str:
         """schedule for tomorrow from underlying database(self.schedule)"""
         day = datetime.datetime.today().weekday() + 2
         if day > 7:
@@ -120,7 +122,7 @@ class ButtonManager:
         return self.schedule.day_schedule(day, user.group_id, is_odd_week)
 
 
-    def calendar_day_schedule(self, user) -> str:
+    def calendar_day_schedule(self, user: User) -> str:
         """schedule for calendar day from underlying database(self.schedule)"""
         return self.schedule.day_schedule(
             user.weekday_from_calendar_day(),
@@ -150,7 +152,7 @@ class ButtonManager:
         return week_sch
 
 
-    def print_main_menu(self, message):
+    def print_main_menu(self, message: Message):
         """
         creates new message with main menu keyboard
         """
@@ -162,7 +164,7 @@ class ButtonManager:
         )
 
 
-    def button_handler(self, update, _context):
+    def button_handler(self, update: Update, _context: CallbackContext):
         """
         handles callback buttons
         """
@@ -227,7 +229,9 @@ class ButtonManager:
         return current_menu
 
 
-    def _update_menu(self, current_menu, menu_history: List[str], id_):
+    def _update_menu(
+        self, current_menu: str, menu_history: List[str], id_: int
+    ):
         self.user_db.update_menu(current_menu, menu_history, id_)
 
 

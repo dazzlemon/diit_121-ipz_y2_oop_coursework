@@ -101,7 +101,7 @@ class Menu(Button):
         """keyboard base"""
 
 
-    def _add_nav_buttons(self, keyboard):
+    def _add_nav_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         if self.has_parent:
             keyboard.append(
                 [InlineKeyboardButton('Back', callback_data='back')]
@@ -111,11 +111,11 @@ class Menu(Button):
         )
 
 
-    def _additional_buttons(self, keyboard):
+    def _additional_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         self._add_nav_buttons(keyboard)
 
 
-    def print(self, message):
+    def print(self, message: Message):
         """prints menu"""
         keyboard = self.keyboard()
         self._additional_buttons(keyboard)

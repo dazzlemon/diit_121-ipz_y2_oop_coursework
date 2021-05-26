@@ -1,14 +1,15 @@
 """
 Manager for user info
 """
-from typing import List
-from user   import User
+from sqlite3 import Connection
+from typing  import List
+from user    import User
 
 class UserDbManager:
     """
     Manager for user info
     """
-    def __init__(self, sql_conn):
+    def __init__(self, sql_conn: Connection):
         self.sql_conn = sql_conn
 
 
@@ -43,7 +44,7 @@ class UserDbManager:
         self.sql_conn.commit()
 
 
-    def is_row_exists(self, id_):
+    def is_row_exists(self, id_: int):
         """check if row with id exists"""
         row = next(self.sql_conn.execute(
             f"""SELECT * FROM USER WHERE ID = {id_}"""
@@ -53,11 +54,6 @@ class UserDbManager:
 
     def insert_or_replace(self, varname: str, id_: int, new_val: str):
         """inserts or updates varname with new_val"""
-        print()
-        print(varname)
-        print(id_)
-        print(new_val)
-        print()
         if self.is_row_exists(id_):
             self.sql_conn.execute(
                 f"""UPDATE USER

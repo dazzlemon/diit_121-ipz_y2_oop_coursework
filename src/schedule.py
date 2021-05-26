@@ -71,7 +71,7 @@ class Schedule:
 
 
     @staticmethod
-    def day_from_int(day):
+    def day_from_int(day: int):
         """returns string with day name from int"""
         days = [
             '',# 1 based
@@ -86,7 +86,7 @@ class Schedule:
         return days[day]
 
 
-    def next_class(self, day, hour, minute, is_odd_week=None):
+    def next_class(self, day: int, hour: int, minute: int, is_odd_week=None):
         """day, hour, minute is <current_time>"""
         if 1 <= day <= 7:
             counter = 0
@@ -127,16 +127,3 @@ class Schedule:
                                 is_lecture_str
                             ) + f'on {self.day_from_int(day_)}, at {time}'
                         )
-
-
-if __name__ == '__main__':
-    import sqlite3
-
-    conn = sqlite3.connect('schedule.db')
-
-    s = Schedule(conn)
-    print(s.week_schedule(911, True))
-
-    print(s.next_class(911, 1, 8, 1))
-
-    conn.close()

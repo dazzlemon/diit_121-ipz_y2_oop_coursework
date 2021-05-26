@@ -44,12 +44,12 @@ class MultiPageMenu(Menu):
         self.print(message)
 
 
-    def _additional_buttons(self, keyboard):
+    def _additional_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         self._add_page_nav_buttons(keyboard)
         self._add_nav_buttons(keyboard)
 
 
-    def _add_nav_buttons(self, keyboard):
+    def _add_nav_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         if self.has_parent:
             keyboard.append(
                 [InlineKeyboardButton('Back', callback_data='back')]
@@ -59,7 +59,7 @@ class MultiPageMenu(Menu):
         )
 
 
-    def _add_page_nav_buttons(self, keyboard):
+    def _add_page_nav_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         keyboard.append([self._prev_button(), self._next_button()])
 
 

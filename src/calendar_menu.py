@@ -56,7 +56,9 @@ class CalendarMenu(MultiPageMenu):
         return row
 
 
-    def _add_month_days(self, keyboard, year, month):
+    def _add_month_days(
+        self, keyboard: List[List[InlineKeyboardButton]], year: int, month: int
+    ):
         my_calendar = calendar.monthcalendar(year, month)
         for week in my_calendar:
             row = []
@@ -68,7 +70,7 @@ class CalendarMenu(MultiPageMenu):
             keyboard.append(row)
 
 
-    def _day_button(self, year, month, day):
+    def _day_button(self, year: int, month: int, day: int):
         """returns button for non 0 day"""
         return InlineKeyboardButton(
             day,

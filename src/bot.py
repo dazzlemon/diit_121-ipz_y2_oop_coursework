@@ -3,7 +3,7 @@ TELEGRAM BOT
 """
 
 import logging
-from typing       import Callable
+from typing       import Callable, List
 from dataclasses  import dataclass
 from telegram.ext import (Updater,
                          CommandHandler,
@@ -17,7 +17,10 @@ class Bot:
     TELEGRAM BOT
     """
     def __init__(
-        self, token, commands, default_handler=None, button_handler=None
+        self,
+        token: str,
+        commands: List[Command],
+        default_handler=None, button_handler=None
     ):
         self._updater = Updater(token=token, use_context=True)
         self._dispatcher = self._updater.dispatcher
