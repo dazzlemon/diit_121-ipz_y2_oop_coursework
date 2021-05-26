@@ -76,6 +76,4 @@ class Bot:
     def run(self):
         """START UPDATING BOT"""
         self._updater.start_polling()
-
-
         
