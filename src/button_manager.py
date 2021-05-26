@@ -4,7 +4,7 @@ Button manager for timetable bot, using button module
 
 import datetime
 from typing          import List
-from telegram        import CallbackQuery, Update
+from telegram        import CallbackQuery
 from button          import LeafButton, Menu
 from user            import User
 from multipage_menu  import MultiPageMenu
@@ -280,13 +280,13 @@ class ButtonManager:
             )
         elif upd == 'week_day':
             opts = [
-                ('Monday', '1'),
-                ('Tuesday', '2'),
+                ('Monday',    '1'),
+                ('Tuesday',   '2'),
                 ('Wednesday', '3'),
-                ('Thursday', '4'),
-                ('Friday', '5'),
-                ('Saturday', '6'),
-                ('Sunday', '7'),
+                ('Thursday',  '4'),
+                ('Friday',    '5'),
+                ('Saturday',  '6'),
+                ('Sunday',    '7'),
             ]
             self.current_updater = MultiPageMenu(
                 opts, upd.upper(), callback, True
