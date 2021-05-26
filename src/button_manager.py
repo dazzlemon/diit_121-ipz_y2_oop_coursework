@@ -3,14 +3,14 @@ Button manager for timetable bot, using button module
 """
 
 import datetime
-from typing          import List
-from telegram        import CallbackQuery
-from button          import LeafButton, ListMenu
-from user            import User
-from multipage_menu  import MultiPageListMenu
-from sql             import Schedule
-from calendar_menu   import CalendarMenu
-from user_db_manager import UserDbManager
+from typing               import List
+from telegram             import CallbackQuery
+from button               import LeafButton, ListMenu
+from user                 import User
+from multipage_list_menu  import MultiPageListMenu
+from sql                  import Schedule
+from calendar_menu        import CalendarMenu
+from user_db_manager      import UserDbManager
 
 
 class ButtonManager:

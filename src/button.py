@@ -116,6 +116,7 @@ class Menu(Button):
 
 
     def print(self, message):
+        """prints menu"""
         keyboard = self.keyboard()
         self._additional_buttons(keyboard)
         markup = InlineKeyboardMarkup(keyboard)
@@ -126,7 +127,8 @@ class ListMenu(Menu):
     """
     Composite from the pattern of the same name
     Prints menu with all the children when clicked, also prints 'Exit' option,
-    and 'Back' if has parent, if 'Back' is clicked than parent is called(printed)
+    and 'Back' if has parent,
+    if 'Back' is clicked than parent is called(printed)
     """
     def __init__(self, text: str, callback: str, parent: ListMenu=None) -> None:
         Menu.__init__(self, parent is not None)
