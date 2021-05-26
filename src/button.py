@@ -134,7 +134,14 @@ class Menu(Button):
         + 'Back if has parent', callback = 'back'
         + 'Exit', callback = 'exit'
         """
-        keyboard = self.keyboard_from_children()
+        keyboard = self.keyboard()
+        self._add_nav_buttons(keyboard)
+
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+
+    def _add_nav_buttons(self, keyboard):
         if self.has_parent:
             keyboard.append(
                 [InlineKeyboardButton('Back', callback_data='back')]
@@ -143,11 +150,8 @@ class Menu(Button):
             [InlineKeyboardButton('Exit', callback_data='exit')]
         )
 
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
 
-
-    def keyboard_from_children(self) ->  List[List[InlineKeyboardButton]]:
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
         """Returns markup keyboard from children"""
         return list(map(
             lambda row: list(map(

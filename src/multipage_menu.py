@@ -31,6 +31,15 @@ class MultiPageMenu(Button):
 
 
     def operation(self, message: Message, command: str, user: User):
+        keyboard = self.keyboard()
+        self._add_page_nav_buttons(keyboard)
+        self._add_nav_buttons(keyboard)
+
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
         keyboard: List[List[InlineKeyboardButton]] = []
         for i in range(self.options_per_page):
             current_option_n = self.current_page * self.options_per_page + i
@@ -44,11 +53,7 @@ class MultiPageMenu(Button):
                 text,
                 callback_data=callback
             )])
-        self._add_page_nav_buttons(keyboard)
-        self._add_nav_buttons(keyboard)
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
+        return keyboard
 
 
     def _add_nav_buttons(self, keyboard):

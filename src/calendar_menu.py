@@ -30,6 +30,15 @@ class CalendarMenu(Button):
 
 
     def operation(self, message: Message, command: str, user: User):
+        keyboard = self.keyboard()
+        self._add_page_nav_buttons(keyboard)
+        self._add_nav_buttons(keyboard)
+
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+    
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
         keyboard: List[List[InlineKeyboardButton]] = []
 
         month = self.start.month + self.current_page - 1# 0 based
@@ -42,11 +51,7 @@ class CalendarMenu(Button):
         )])
         keyboard.append(self.weekdays_names())
         self._add_month_days(keyboard, year, month)
-        self._add_page_nav_buttons(keyboard)
-        self._add_nav_buttons(keyboard)
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
+        return keyboard
 
 
     @staticmethod
