@@ -87,18 +87,14 @@ class CalendarMenu(Button):
             ))
         else:
             nav_buttons.append(empty_button)
-        if nav_buttons != []:
-            keyboard.append(nav_buttons)
+        keyboard.append(nav_buttons)
 
         if self.has_parent:
-            keyboard.append([])
-            keyboard[-1].append(
-                InlineKeyboardButton('Back', callback_data='back')
+            keyboard.append(
+                [InlineKeyboardButton('Back', callback_data='back')]
             )
-
-        keyboard.append([])
-        keyboard[-1].append(
-            InlineKeyboardButton('Exit', callback_data='exit')
+        keyboard.append(
+            [InlineKeyboardButton('Exit', callback_data='exit')]
         )
 
         markup = InlineKeyboardMarkup(keyboard)
