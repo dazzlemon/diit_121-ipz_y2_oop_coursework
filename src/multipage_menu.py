@@ -30,7 +30,7 @@ class MultiPageMenu(Button):
         return ''
 
 
-    def operation(self, message: Message, command: str, user_info: User):
+    def operation(self, message: Message, command: str, user: User):
         keyboard: List[List[InlineKeyboardButton]] = []
         for i in range(self.options_per_page):
             current_option_n = self.current_page * self.options_per_page + i
@@ -44,37 +44,49 @@ class MultiPageMenu(Button):
                 text,
                 callback_data=callback
             )])
-
-        nav_buttons: List[InlineKeyboardButton] = []
-
-        empty_button = InlineKeyboardButton(' ', callback_data='pass')
-
-        if self.current_page > 0:
-            nav_buttons.append(InlineKeyboardButton(
-                '<',
-                callback_data='prev_page'
-            ))
-        else:
-            nav_buttons.append(empty_button)
-        if self.current_page + 1 < len(self.options) / self.options_per_page:
-            nav_buttons.append(InlineKeyboardButton(
-                '>',
-                callback_data='next_page'
-            ))
-        else:
-            nav_buttons.append(empty_button)
-        if self.options_per_page < len(self.options):
-            keyboard.append(nav_buttons)
-
-        if self.has_parent:
-            keyboard.append([])
-            keyboard[-1].append(
-                InlineKeyboardButton('Back', callback_data='back')
-            )
-        keyboard.append([])
-        keyboard[-1].append(
-            InlineKeyboardButton('Exit', callback_data='exit')
-        )
+        self._add_page_nav_buttons(keyboard)
+        self._add_nav_buttons(keyboard)
 
         markup = InlineKeyboardMarkup(keyboard)
         message.edit_reply_markup(reply_markup=markup)
+
+
+    def _add_nav_buttons(self, keyboard):
+        if self.has_parent:
+            keyboard.append(
+                [InlineKeyboardButton('Back', callback_data='back')]
+            )
+        keyboard.append(
+            [InlineKeyboardButton('Exit', callback_data='exit')]
+        )
+
+
+    def _add_page_nav_buttons(self, keyboard):
+        keyboard.append([self._prev_button(), self._next_button()])
+
+
+    def _next_button(self):
+        diff = len(self.options) / self.options_per_page
+        if self.current_page + 1 < diff:
+            return InlineKeyboardButton(
+                '>',
+                callback_data='next_page'
+            )
+        else:
+            return self.empty_button()
+
+
+    def _prev_button(self):
+        if self.current_page > 0:
+            return InlineKeyboardButton(
+                '<',
+                callback_data='prev_page'
+            )
+        else:
+            return self.empty_button()
+
+
+    @staticmethod
+    def empty_button():
+        """returns button with no text and 'pass' callback"""
+        return InlineKeyboardButton(' ', callback_data='pass')
