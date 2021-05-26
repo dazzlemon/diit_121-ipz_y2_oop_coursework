@@ -40,10 +40,6 @@ class MultiPageMenu(Button):
         """keyboard base"""
 
 
-    def callback_args(self) -> str:
-        return ''
-
-
     def operation(self, message: Message, command: str, user: User):
         keyboard = self.keyboard()
         self._add_page_nav_buttons(keyboard)
