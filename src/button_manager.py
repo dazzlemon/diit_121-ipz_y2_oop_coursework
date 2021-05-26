@@ -168,27 +168,23 @@ class ButtonManager:
         """
         query = update.callback_query
         query.answer()
-
-        command_str, update_strs, new_val_strs = self._parse_callback(query.data)
-        menu_history, current_menu = self.user_db.menu_data(
-            update.effective_chat.id
-        )
+        command, update_strs, new_val_strs = self._parse_callback(query.data)
+        chat_id = update.effective_chat.id
+        menu_history, current_menu = self.user_db.menu_data(chat_id)
         if new_val_strs:
             self._new_val_handler(new_val_strs, update)
 
-        user_info = self.user_db.user(update.effective_chat.id)
+        user_info = self.user_db.user(chat_id)
         if update_strs:
             self._update_handler(
-                update_strs, command_str, menu_history,
+                update_strs, command, menu_history,
                 current_menu, query, user_info
             )
         else:
             current_menu = self._default_handler(
-                command_str, query, menu_history, user_info, current_menu
+                command, query, menu_history, user_info, current_menu
             )
-        self._update_menu(
-            current_menu, menu_history, update.effective_chat.id
-        )
+        self._update_menu(current_menu, menu_history, chat_id)
 
 
     @staticmethod
