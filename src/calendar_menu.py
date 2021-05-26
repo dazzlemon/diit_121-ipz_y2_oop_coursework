@@ -67,10 +67,26 @@ class CalendarMenu(Button):
                     ))
             keyboard.append(row)
         #Last row - Buttons
+        self._add_page_nav_buttons(keyboard)
+        self._add_nav_buttons(keyboard)
+
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+
+    def _add_nav_buttons(self, keyboard):
+        if self.has_parent:
+            keyboard.append(
+                [InlineKeyboardButton('Back', callback_data='back')]
+            )
+        keyboard.append(
+            [InlineKeyboardButton('Exit', callback_data='exit')]
+        )
+
+
+    def _add_page_nav_buttons(self, keyboard):
         nav_buttons: List[InlineKeyboardButton] = []
-
         empty_button = InlineKeyboardButton(' ', callback_data='pass')
-
         if self.current_page > 0:
             nav_buttons.append(InlineKeyboardButton(
                 '<',
@@ -88,14 +104,3 @@ class CalendarMenu(Button):
         else:
             nav_buttons.append(empty_button)
         keyboard.append(nav_buttons)
-
-        if self.has_parent:
-            keyboard.append(
-                [InlineKeyboardButton('Back', callback_data='back')]
-            )
-        keyboard.append(
-            [InlineKeyboardButton('Exit', callback_data='exit')]
-        )
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
