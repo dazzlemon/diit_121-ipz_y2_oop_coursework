@@ -59,11 +59,14 @@ class ButtonManager:
                 user.is_odd_week_from_calendar_day()
             )
 
-        def whole_week_day_schedule(user) -> str:
-            return self.schedule.day_schedule(
+        def week_day_schedule(is_odd_week: bool):
+            def wds(user) -> str:
+                return self.schedule.day_schedule(
                 user.week_day,
-                user.group_id
+                user.group_id,
+                is_odd_week
             )
+            return wds
 
         # main_menu.day_menu init
         self.today_button = LeafButton(
@@ -83,13 +86,15 @@ class ButtonManager:
         # main_menu.day_menu.week_day_menu init
         self.wholeweek_day_button = LeafButton(
             'Whole Week(Odd & Even) Day', 'whole_week_day', self.week_day_menu,
-            whole_week_day_schedule, 'group_id', 'week_day'
+            week_day_schedule(None), 'group_id', 'week_day'
         )
         self.oddweek_day_button = LeafButton(
-            'Odd Week Day', 'odd_week_day', self.week_day_menu
+            'Odd Week Day', 'odd_week_day', self.week_day_menu,
+            week_day_schedule(True), 'group_id', 'week_day'
         )
         self.evenweek_day_button = LeafButton(
-            'Even Week Day', 'even_week_day', self.week_day_menu, lambda n: 'test'
+            'Even Week Day', 'even_week_day', self.week_day_menu, 
+            week_day_schedule(False), 'group_id', 'week_day'
         )
 
         # main_menu.week_menu init
