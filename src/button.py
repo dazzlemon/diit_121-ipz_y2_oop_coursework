@@ -16,17 +16,6 @@ class Button(ABC):
     (unless its 'Exit' or 'Back', these just exit the menu or go to the previous
     respectively)
     """
-    @property
-    def parent(self) -> Menu:
-        """
-        parent of this Button, needed to check if 'Back' button is needed
-        """
-        return self._parent
-
-
-    @parent.setter
-    def parent(self, parent: Button):
-        self._parent = parent
 
 
     def callback_args(self) -> str:
@@ -108,9 +97,9 @@ class Menu(Button):
         parent: Menu=None,
     ) -> None:
         self._children: List[List[Button]] = [[]]
-        self.parent   = parent
-        self.text     = text
-        self.callback = callback
+        self.has_parent = parent is not None
+        self.text       = text
+        self.callback   = callback
         if parent is not None:
             parent.add(self)
 
@@ -153,7 +142,7 @@ class Menu(Button):
                 self._children
             ))
 
-            if self.parent is not None:
+            if self.has_parent:
                 keyboard.append([])
                 keyboard[-1].append(
                     InlineKeyboardButton('Back', callback_data='back')
