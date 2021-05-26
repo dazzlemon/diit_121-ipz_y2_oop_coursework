@@ -63,7 +63,7 @@ class MultiPageMenu(Button):
             ))
         else:
             nav_buttons.append(empty_button)
-        if nav_buttons != []:
+        if self.options_per_page < len(self.options):
             keyboard.append(nav_buttons)
 
         if self.has_parent:
