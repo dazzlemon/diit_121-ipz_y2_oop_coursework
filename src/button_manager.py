@@ -179,10 +179,9 @@ class ButtonManager:
         update_strs = [update for update in callback_list if '!' in update]
         new_val_strs = [new_val for new_val in callback_list if '=' in new_val]
 
-        menu_history_str, current_menu = self.user_db.menu_data(
+        menu_history, current_menu = self.user_db.menu_data(
             update.effective_chat.id
         )
-        menu_history = (menu_history_str or '').split(';')
 
         if new_val_strs:
             self._new_val_handler(new_val_strs, update)

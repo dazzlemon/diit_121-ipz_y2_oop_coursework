@@ -12,15 +12,16 @@ class UserDbManager:
         self.sql_conn = sql_conn
 
 
-    def menu_data(self, id_: int):
-        """returns tuple (menu_history_str, current_menu)"""
+    def menu_data(self, id_: int) -> (List[str], str):
+        """returns tuple (menu_history, current_menu)"""
         row = next(self.sql_conn.execute(f"""SELECT MENU_HISTORY, CURRENT_MENU
                 FROM USER
                 WHERE ID = {id_}"""
         ))
         menu_history_str = row[0]
+        menu_history = (menu_history_str or '').split(';')
         current_menu = row[1]
-        return menu_history_str, current_menu
+        return menu_history, current_menu
 
 
     def update_menu(self, current_menu: str, menu_history: List[str], id_: int):
