@@ -172,7 +172,7 @@ class ButtonManager:
         chat_id = update.effective_chat.id
         menu_history, current_menu = self.user_db.menu_data(chat_id)
         if new_val_strs:
-            self._new_val_handler(new_val_strs, update)
+            self._new_val_handler(new_val_strs, chat_id)
 
         user_info = self.user_db.user(chat_id)
         if update_strs:
@@ -231,16 +231,14 @@ class ButtonManager:
         self.user_db.update_menu(current_menu, menu_history, id_)
 
 
-    def _new_val_handler(self, new_val_strs: List[str], update: Update):
+    def _new_val_handler(self, new_val_strs: List[str], chat_id: int):
         for new_val_str in new_val_strs:
             varname, new_val = new_val_str.split('=')
             varname = varname.upper()
 
             if not new_val.isdigit():
                 new_val = "'" + new_val + "'"
-            self.user_db.insert_or_replace(
-                varname, update.effective_chat.id, new_val
-            )
+            self.user_db.insert_or_replace(varname, chat_id, new_val)
 
 
     def _update_handler(
