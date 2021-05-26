@@ -118,7 +118,7 @@ class Menu(Button):
         Tries to handle command or delegates it to self._children
         """
         if command == self.callback:
-            self.print_menu(message)
+            self.print(message)
             return True
         else:
             for row in self._children:
@@ -127,7 +127,7 @@ class Menu(Button):
                         return True
 
 
-    def print_menu(self, message):
+    def print(self, message):
         """
         Print all Children in the order they were added, first row wise,
         then in row

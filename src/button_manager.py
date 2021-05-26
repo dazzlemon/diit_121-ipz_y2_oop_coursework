@@ -7,7 +7,7 @@ from typing          import List
 from telegram        import CallbackQuery
 from button          import LeafButton, Menu
 from user            import User
-from multipage_menu  import MultiPageMenu
+from multipage_menu  import MultiPageListMenu
 from sql             import Schedule
 from calendar_menu   import CalendarMenu
 from user_db_manager import UserDbManager
@@ -262,7 +262,7 @@ class ButtonManager:
             for row in rows:
                 id_ = row[0]
                 opts.append((id_, id_))
-            self.current_updater = MultiPageMenu(
+            self.current_updater = MultiPageListMenu(
                 opts, upd.upper(), callback, True
             )
         elif upd == 'teacher_id':
@@ -288,7 +288,7 @@ class ButtonManager:
                 ('Saturday',  '6'),
                 ('Sunday',    '7'),
             ]
-            self.current_updater = MultiPageMenu(
+            self.current_updater = MultiPageListMenu(
                 opts, upd.upper(), callback, True
             )
         if current_menu not in menu_history:

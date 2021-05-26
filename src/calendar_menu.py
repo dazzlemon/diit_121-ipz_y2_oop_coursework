@@ -37,7 +37,7 @@ class CalendarMenu(Button):
         markup = InlineKeyboardMarkup(keyboard)
         message.edit_reply_markup(reply_markup=markup)
 
-    
+
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
         keyboard: List[List[InlineKeyboardButton]] = []
 

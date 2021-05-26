@@ -2,28 +2,32 @@
 Additional class to choose arguments for LeafButtons(update User state)
 """
 from typing   import List, Tuple
+from abc      import abstractmethod
 from telegram import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from button   import Button
 from user     import User
 
-
 class MultiPageMenu(Button):
-    """
-    Forces user to fill in new data(choice from long lists)
-    """
-    def __init__(
-        self,
-        options: List[Tuple[str, str]], arg_name: str, callback: str,
-        has_parent: bool,
-        options_per_page: int=10
-    ):
-        self.options = options
-        self.options_per_page = options_per_page
-        self.arg_name = arg_name
-        self.callback = callback
-        self.has_parent = has_parent
+    @property
+    @abstractmethod
+    def has_parent(self) -> bool:
+        """Needed to check if 'Back' button is needed"""
 
-        self.current_page = 0
+
+    @abstractmethod
+    def max_page(self) -> int:
+        """maxpage"""
+
+
+    @property
+    @abstractmethod
+    def current_page(self) -> int:
+        """current_page"""
+
+
+    @abstractmethod
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
+        """keyboard base"""
 
 
     def callback_args(self) -> str:
@@ -39,21 +43,6 @@ class MultiPageMenu(Button):
         message.edit_reply_markup(reply_markup=markup)
 
 
-    def keyboard(self) -> List[List[InlineKeyboardButton]]:
-        keyboard: List[List[InlineKeyboardButton]] = []
-        for i in range(self.options_per_page):
-            current_option_n = self.current_page * self.options_per_page + i
-            if current_option_n >= len(self.options):
-                break
-            current_option = self.options[current_option_n]
-            text = current_option[0]
-            callback = f'{self.callback};{self.arg_name}={current_option[1]}'
-
-            keyboard.append([InlineKeyboardButton(
-                text,
-                callback_data=callback
-            )])
-        return keyboard
 
 
     def _add_nav_buttons(self, keyboard):
@@ -71,8 +60,7 @@ class MultiPageMenu(Button):
 
 
     def _next_button(self):
-        diff = len(self.options) / self.options_per_page
-        if self.current_page + 1 < diff:
+        if self.current_page + 1 < self.max_page():
             return InlineKeyboardButton(
                 '>',
                 callback_data='next_page'
@@ -95,3 +83,58 @@ class MultiPageMenu(Button):
     def empty_button():
         """returns button with no text and 'pass' callback"""
         return InlineKeyboardButton(' ', callback_data='pass')
+
+
+class MultiPageListMenu(MultiPageMenu):
+    """
+    Forces user to fill in new data(choice from long lists)
+    """
+    def __init__(
+        self,
+        options: List[Tuple[str, str]], arg_name: str, callback: str,
+        has_parent: bool,
+        options_per_page: int=10
+    ):
+        self.options = options
+        self.options_per_page = options_per_page
+        self.arg_name = arg_name
+        self.callback = callback
+        self._has_parent = has_parent
+
+        self._current_page = 0
+
+
+    @property
+    def has_parent(self) -> bool:
+        return self._has_parent
+
+
+    def max_page(self) -> int:
+        return len(self.options) / self.options_per_page
+
+
+    @property
+    def current_page(self) -> int:
+        return self._current_page
+
+
+    @current_page.setter
+    def current_page(self, val: int):
+        self._current_page = val
+
+
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
+        keyboard: List[List[InlineKeyboardButton]] = []
+        for i in range(self.options_per_page):
+            current_option_n = self.current_page * self.options_per_page + i
+            if current_option_n >= len(self.options):
+                break
+            current_option = self.options[current_option_n]
+            text = current_option[0]
+            callback = f'{self.callback};{self.arg_name}={current_option[1]}'
+
+            keyboard.append([InlineKeyboardButton(
+                text,
+                callback_data=callback
+            )])
+        return keyboard
