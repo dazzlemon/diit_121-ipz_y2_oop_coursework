@@ -34,6 +34,7 @@ class MultiPageMenu(Button):
     def max_page(self) -> int:
         """maxpage"""
 
+
     @abstractmethod
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
         """keyboard base"""
@@ -50,8 +51,6 @@ class MultiPageMenu(Button):
 
         markup = InlineKeyboardMarkup(keyboard)
         message.edit_reply_markup(reply_markup=markup)
-
-
 
 
     def _add_nav_buttons(self, keyboard):
