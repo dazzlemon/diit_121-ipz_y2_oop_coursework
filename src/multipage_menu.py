@@ -3,14 +3,14 @@ Additional class to choose arguments for LeafButtons(update User state)
 """
 from typing   import List, Tuple
 from abc      import abstractmethod
-from telegram import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from button   import Button
+from telegram import Message, InlineKeyboardButton
+from button   import Menu
 from user     import User
 
-class MultiPageMenu(Button):
+class MultiPageMenu(Menu):
     """Multi page menu with scrolling"""
     def __init__(self, has_parent):
-        self._has_parent = has_parent
+        Menu.__init__(self, has_parent)
 
 
     @property
@@ -41,12 +41,12 @@ class MultiPageMenu(Button):
 
 
     def operation(self, message: Message, command: str, user: User):
-        keyboard = self.keyboard()
+        self.print(message)
+
+
+    def _additional_buttons(self, keyboard):
         self._add_page_nav_buttons(keyboard)
         self._add_nav_buttons(keyboard)
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
 
 
     def _add_nav_buttons(self, keyboard):

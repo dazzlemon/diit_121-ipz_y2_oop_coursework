@@ -5,7 +5,7 @@ Button manager for timetable bot, using button module
 import datetime
 from typing          import List
 from telegram        import CallbackQuery
-from button          import LeafButton, Menu
+from button          import LeafButton, ListMenu
 from user            import User
 from multipage_menu  import MultiPageListMenu
 from sql             import Schedule
@@ -22,18 +22,18 @@ class ButtonManager:
         self.schedule_db = schedule_db
         self.current_updater = None
         self.schedule = Schedule(schedule_db)
-        self.main_menu = Menu('Menu', 'menu')
+        self.main_menu = ListMenu('Menu', 'menu')
 
         # main_menu init
-        self.day_menu = Menu('Day', 'day', self.main_menu)
+        self.day_menu = ListMenu('Day', 'day', self.main_menu)
         self.main_menu.next_row()
-        self.week_menu = Menu('Week', 'week', self.main_menu)
+        self.week_menu = ListMenu('Week', 'week', self.main_menu)
         self.main_menu.next_row()
-        self.group_menu = Menu('Group', 'group', self.main_menu)
+        self.group_menu = ListMenu('Group', 'group', self.main_menu)
         self.main_menu.next_row()
-        self.teacher_menu = Menu('Teacher', 'teacher', self.main_menu)
+        self.teacher_menu = ListMenu('Teacher', 'teacher', self.main_menu)
         self.main_menu.next_row()
-        self.student_menu = Menu('Student', 'student', self.main_menu)
+        self.student_menu = ListMenu('Student', 'student', self.main_menu)
         self.main_menu.next_row()
 
         # main_menu.day_menu init
@@ -49,7 +49,7 @@ class ButtonManager:
             'Calendar Day', 'calendar_day_button', self.day_menu,
             self.calendar_day_schedule, 'group_id', 'calendar_day'
         )
-        self.week_day_menu = Menu('Week Day', 'weekday_button', self.day_menu)
+        self.week_day_menu = ListMenu('Week Day', 'weekday_button', self.day_menu)
 
         # main_menu.day_menu.week_day_menu init
         self.wholeweek_day_button = LeafButton(

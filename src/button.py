@@ -42,7 +42,7 @@ class LeafButton(Button):
     """
     def __init__(
         self,
-        text: str, callback: str, parent: Menu,
+        text: str, callback: str, parent: ListMenu,
         handler: Callable[[User], str]=None,
         arg1name: str=None, arg2name: str=None
     ):
@@ -86,10 +86,51 @@ class Menu(Button):
     Prints menu with all the children when clicked, also prints 'Exit' option,
     and 'Back' if has parent, if 'Back' is clicked than parent is called(printed)
     """
+    def __init__(self, has_parent):
+        self._has_parent = has_parent
 
-    def __init__(self, text: str, callback: str, parent: Menu=None) -> None:
+
+    @property
+    def has_parent(self) -> bool:
+        """Needed to check if 'Back' button is needed"""
+        return self._has_parent
+
+
+    @abstractmethod
+    def keyboard(self) -> List[List[InlineKeyboardButton]]:
+        """keyboard base"""
+
+
+    def _add_nav_buttons(self, keyboard):
+        if self.has_parent:
+            keyboard.append(
+                [InlineKeyboardButton('Back', callback_data='back')]
+            )
+        keyboard.append(
+            [InlineKeyboardButton('Exit', callback_data='exit')]
+        )
+
+
+    def _additional_buttons(self, keyboard):
+        self._add_nav_buttons(keyboard)
+
+
+    def print(self, message):
+        keyboard = self.keyboard()
+        self._additional_buttons(keyboard)
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+
+class ListMenu(Menu):
+    """
+    Composite from the pattern of the same name
+    Prints menu with all the children when clicked, also prints 'Exit' option,
+    and 'Back' if has parent, if 'Back' is clicked than parent is called(printed)
+    """
+    def __init__(self, text: str, callback: str, parent: ListMenu=None) -> None:
+        Menu.__init__(self, parent is not None)
         self._children: List[List[Button]] = [[]]
-        self.has_parent = parent is not None
         self.text       = text
         self.callback   = callback
         if parent is not None:
@@ -125,30 +166,6 @@ class Menu(Button):
                 for button in row:
                     if button.operation(message, command, user):
                         return True
-
-
-    def print(self, message):
-        """
-        Print all Children in the order they were added, first row wise,
-        then in row
-        + 'Back if has parent', callback = 'back'
-        + 'Exit', callback = 'exit'
-        """
-        keyboard = self.keyboard()
-        self._add_nav_buttons(keyboard)
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
-
-
-    def _add_nav_buttons(self, keyboard):
-        if self.has_parent:
-            keyboard.append(
-                [InlineKeyboardButton('Back', callback_data='back')]
-            )
-        keyboard.append(
-            [InlineKeyboardButton('Exit', callback_data='exit')]
-        )
 
 
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
