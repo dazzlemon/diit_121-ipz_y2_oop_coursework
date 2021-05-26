@@ -29,7 +29,7 @@ class CalendarMenu(Button):
         return ''
 
 
-    def operation(self, message: Message, command: str, user_info: User):
+    def operation(self, message: Message, command: str, user: User):
         keyboard: List[List[InlineKeyboardButton]] = []
 
         month = self.start.month + self.current_page - 1# 0 based
@@ -37,21 +37,27 @@ class CalendarMenu(Button):
         month = month % 12
         month += 1# 1 based
 
-        #First row - Month and Year
-        row = []
-        row.append(
-            InlineKeyboardButton(
-                '%s %s' % (calendar.month_name[month], year),
-                callback_data='pass'
-            )
-        )
-        keyboard.append(row)
-        #Second row - Week Days
-        row = []
-        for day in ["Mo","Tu","We","Th","Fr","Sa","Su"]:
-            row.append(InlineKeyboardButton(day, callback_data='pass'))
-        keyboard.append(row)
+        keyboard.append([InlineKeyboardButton(
+            '%s %s' % (calendar.month_name[month], year), callback_data='pass'
+        )])
+        keyboard.append(self.weekdays_names())
+        self._add_month_days(keyboard, year, month)
+        self._add_page_nav_buttons(keyboard)
+        self._add_nav_buttons(keyboard)
 
+        markup = InlineKeyboardMarkup(keyboard)
+        message.edit_reply_markup(reply_markup=markup)
+
+
+    @staticmethod
+    def weekdays_names():
+        row = []
+        for day in ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]:
+            row.append(InlineKeyboardButton(day, callback_data='pass'))
+        return row
+
+
+    def _add_month_days(self, keyboard, year, month):
         my_calendar = calendar.monthcalendar(year, month)
         for week in my_calendar:
             row = []
@@ -66,12 +72,6 @@ class CalendarMenu(Button):
                         ) + ';' + self.callback
                     ))
             keyboard.append(row)
-        #Last row - Buttons
-        self._add_page_nav_buttons(keyboard)
-        self._add_nav_buttons(keyboard)
-
-        markup = InlineKeyboardMarkup(keyboard)
-        message.edit_reply_markup(reply_markup=markup)
 
 
     def _add_nav_buttons(self, keyboard):
