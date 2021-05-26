@@ -24,9 +24,7 @@ class Button(ABC):
 
 
     @abstractmethod
-    def operation(
-        self, message: Message, command: str, user_info: User
-    ) -> bool:
+    def operation(self, message: Message, command: str, user: User) -> bool:
         """
         Changes parameter message, performed if command == callback
         True -> changed menu
@@ -67,16 +65,14 @@ class LeafButton(Button):
         return cb_args
 
 
-    def operation(
-        self, message: Message, command: str, user_info: User
-    ) -> bool:
+    def operation(self, message: Message, command: str, user: User) -> bool:
         """
         call for the handler
         """
         if command == self.callback:
             new_text = f'leaf button: {self.text}'
             if self.handler is not None:
-                new_text = self.handler(user_info)
+                new_text = self.handler(user)
             message.edit_text(new_text)
             message.edit_reply_markup(reply_markup=None)
             # raises BadRequest, but everything works as intended
@@ -91,11 +87,7 @@ class Menu(Button):
     and 'Back' if has parent, if 'Back' is clicked than parent is called(printed)
     """
 
-    def __init__(
-        self,
-        text: str, callback: str,
-        parent: Menu=None,
-    ) -> None:
+    def __init__(self, text: str, callback: str, parent: Menu=None) -> None:
         self._children: List[List[Button]] = [[]]
         self.has_parent = parent is not None
         self.text       = text
@@ -121,9 +113,7 @@ class Menu(Button):
             self._children.append([])
 
 
-    def operation(
-        self, message: Message, command: str, user_info: User
-    ) -> bool:
+    def operation(self, message: Message, command: str, user: User) -> bool:
         """
         Print all Children in the order they were added, first row wise,
         then in row
@@ -159,5 +149,5 @@ class Menu(Button):
         else:
             for row in self._children:
                 for button in row:
-                    if button.operation(message, command, user_info):
+                    if button.operation(message, command, user):
                         return True
