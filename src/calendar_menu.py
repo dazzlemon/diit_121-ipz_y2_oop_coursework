@@ -80,10 +80,15 @@ class CalendarMenu(MultiPageMenu):
                 if day == 0:
                     row.append(self.empty_button())
                 else:
-                    row.append(InlineKeyboardButton(
-                        day,
-                        callback_data='CALENDAR_DAY=%s/%s/%s' % (
-                            year, month, day
-                        ) + ';' + self.callback
-                    ))
+                    row.append(self._day_button(year, month, day))
             keyboard.append(row)
+
+
+    def _day_button(self, year, month, day):
+        """returns button for non 0 day"""
+        return InlineKeyboardButton(
+            day,
+            callback_data='CALENDAR_DAY=%s/%s/%s' % (
+                year, month, day
+            ) + ';' + self.callback
+        )
