@@ -154,7 +154,7 @@ class ButtonManager:
         """
         creates new message with main menu keyboard
         """
-        self._update_menu(self.main_menu.callback, '', message.chat_id)
+        self._update_menu(self.main_menu.callback, [], message.chat_id)
         self.main_menu.operation(
             message,
             self.main_menu.callback,
@@ -188,7 +188,6 @@ class ButtonManager:
             self._new_val_handler(new_val_strs, update)
 
         user_info = self.user_db.user(update.effective_chat.id)
-
         if update_strs:
             self._update_handler(
                 update_strs, command_str, menu_history,
@@ -198,9 +197,8 @@ class ButtonManager:
             current_menu = self._default_handler(
                 command_str, query, menu_history, user_info, current_menu
             )
-        menu_history_str = ';'.join(menu_history)
         self._update_menu(
-            current_menu, menu_history_str, update.effective_chat.id
+            current_menu, menu_history, update.effective_chat.id
         )
 
 
@@ -240,7 +238,7 @@ class ButtonManager:
         return current_menu
 
 
-    def _update_menu(self, current_menu, menu_history, id_):
+    def _update_menu(self, current_menu, menu_history: List[str], id_):
         self.user_db.update_menu(current_menu, menu_history, id_)
 
 

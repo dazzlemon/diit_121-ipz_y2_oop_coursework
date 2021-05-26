@@ -1,7 +1,8 @@
 """
 Manager for user info
 """
-from user import User
+from typing import List
+from user   import User
 
 class UserDbManager:
     """
@@ -11,7 +12,7 @@ class UserDbManager:
         self.sql_conn = sql_conn
 
 
-    def menu_data(self, id_):
+    def menu_data(self, id_: int):
         """returns tuple (menu_history_str, current_menu)"""
         row = next(self.sql_conn.execute(f"""SELECT MENU_HISTORY, CURRENT_MENU
                 FROM USER
@@ -22,20 +23,21 @@ class UserDbManager:
         return menu_history_str, current_menu
 
 
-    def update_menu(self, current_menu, menu_history, id_):
+    def update_menu(self, current_menu: str, menu_history: List[str], id_: int):
         """inserts or replaces info about users state"""
+        menu_history_str = ';'.join(menu_history)
         if self.is_row_exists(id_):
             self.sql_conn.execute(
                 f"""UPDATE USER
                     SET CURRENT_MENU = '{current_menu}',
-                        MENU_HISTORY = '{menu_history}'
+                        MENU_HISTORY = '{menu_history_str}'
                     WHERE ID = {id_}"""
             )
         else:
             self.sql_conn.execute(f"""REPLACE INTO USER
                     (CURRENT_MENU, MENU_HISTORY, ID)
                 VALUES
-                    ('{current_menu}', '{menu_history}', {id_})"""
+                    ('{current_menu}', '{menu_history_str}', {id_})"""
             )
         self.sql_conn.commit()
 
