@@ -33,9 +33,15 @@ class ButtonManager:
         self.main_menu.next_row()
         self.group_menu = ListMenu('Group', 'group', self.main_menu)
         self.main_menu.next_row()
-        self.teacher_menu = ListMenu('Teacher', 'teacher', self.main_menu)
+        self.teacher_menu = LeafButton(
+            'Teacher info', 'teacher', self.main_menu,
+            self.teacher_info, 'teacher_info'
+        )
         self.main_menu.next_row()
-        self.student_menu = ListMenu('Student', 'student', self.main_menu)
+        self.student_menu = LeafButton(
+            'Class info', 'class', self.main_menu,
+            self.class_info, 'class_info'
+        )
         self.main_menu.next_row()
 
         # main_menu.day_menu init
@@ -92,16 +98,6 @@ class ButtonManager:
             'Subgroup2', 'subgroup2', self.group_menu
         )
 
-        # main_menu.teacher_menu init
-        self.teacher_info_button = LeafButton(
-            'Info about teacher', 'teacher_info', self.teacher_menu
-        )
-
-        # main.menu.student_menu init
-        self.student_info_button = LeafButton(
-            'Info about student', 'student_info', self.student_menu
-        )
-
 
     def today_schedule(self, user: User) -> str:
         """schedule for today from underlying database(self.schedule)"""
@@ -150,6 +146,14 @@ class ButtonManager:
                 is_odd_week
             )
         return week_sch
+
+
+    def teacher_info(self, user: User):
+        return f'info about teacher with id={user.teacher_id}'#TODO
+
+
+    def class_info(self, user: User):
+        return f'info about class with id={user.class_id}'#TODO
 
 
     def print_main_menu(self, message: Message):
