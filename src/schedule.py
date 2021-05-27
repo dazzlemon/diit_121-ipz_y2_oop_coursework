@@ -2,7 +2,8 @@
 Read only manager for schedule database
 """
 from itertools import cycle, dropwhile, takewhile
-from sqlite3 import Connection
+from sqlite3   import Connection
+from user      import User
 
 class Schedule:
     """
@@ -127,3 +128,16 @@ class Schedule:
                                 is_lecture_str
                             ) + f'on {self.day_from_int(day_)}, at {time}'
                         )
+
+
+    def teacher_info(self, user: User):
+        row = next(self.sql_conn.execute(
+            f"""SELECT FIRSTNAME, LASTNAME
+               FROM TEACHER
+               WHERE TEACHER_ID = {user.teacher_id}"""
+        ))
+        return f'Info about {row[0]} {row[1]}'#TODO
+
+
+    def class_info(self, user: User):
+        return f'info about class with id={user.class_id}'#TODO
