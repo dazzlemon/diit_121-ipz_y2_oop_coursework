@@ -130,8 +130,8 @@ class Schedule:
 
 
     def current_class(self, day: int, hour: int, minute: int, is_odd_week=None):
+        """returns stringified info about current class"""
         #TODO
-        pass
 
 
     def teacher_info(self, id_):
@@ -178,5 +178,6 @@ class Schedule:
 
 
     def group_list(self, id_, subgroup):
+        """stringified list group"""
         #TODO
         return f'group {id_}'

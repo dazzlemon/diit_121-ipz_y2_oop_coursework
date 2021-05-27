@@ -174,6 +174,7 @@ class ButtonManager:
 
 
     def group_list(self, subgroup: int):
+        """wrapper"""
         def gr_ls(user):
             return self.schedule.group_list(user.group_id, subgroup)
         return gr_ls
