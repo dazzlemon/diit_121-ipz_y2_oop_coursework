@@ -355,7 +355,17 @@ class ButtonManager:
                 opts, upd.upper(), callback, True
             )
         elif upd == 'class_id':
-            pass
+            rows = self.schedule_db.execute(
+                """SELECT CLASS_ID, NAME
+                   FROM CLASS"""
+            )
+            for row in rows:
+                name = row[1]
+                id_ = row[0]
+                opts.append((name, id_))
+            self.current_updater = MultiPageListMenu(
+                opts, upd.upper(), callback, True
+            )
         if current_menu not in menu_history:
             menu_history.append(current_menu)
         print()

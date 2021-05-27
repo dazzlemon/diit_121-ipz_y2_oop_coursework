@@ -14,6 +14,7 @@ class User:
     teacher_id: int
     calendar_day: str
     week_day: int
+    class_id: int
 
 
     def weekday_from_calendar_day(self):
