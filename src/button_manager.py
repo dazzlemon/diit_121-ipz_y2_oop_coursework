@@ -35,12 +35,12 @@ class ButtonManager:
         self.main_menu.next_row()
         self.teacher_menu = LeafButton(
             'Teacher info', 'teacher', self.main_menu,
-            self.teacher_info, 'teacher_info'
+            self.teacher_info, 'teacher_id'
         )
         self.main_menu.next_row()
         self.student_menu = LeafButton(
             'Class info', 'class', self.main_menu,
-            self.class_info, 'class_info'
+            self.class_info, 'class_id'
         )
         self.main_menu.next_row()
 
@@ -274,17 +274,24 @@ class ButtonManager:
                 opts, upd.upper(), callback, True
             )
         elif upd == 'teacher_id':
-            pass# TODO
+            rows = self.schedule_db.execute(
+                """SELECT TEACHER_ID, FIRSTNAME, LASTNAME
+                   FROM TEACHER"""
+            )
+            for row in rows:
+                id_ = row[0]
+                name = row[1] + ' ' + row[2]
+                opts.append((name, id_))
+            self.current_updater = MultiPageListMenu(
+                opts, upd.upper(), callback, True
+            )
         elif upd == 'student_id':
             pass# TODO
         elif upd == 'calendar_day':
             today = datetime.date.today()
             next_year = datetime.date(today.year + 1, today.month, today.day)
             self.current_updater = CalendarMenu(
-                today,
-                next_year,
-                True,
-                callback
+                today, next_year, True, callback
             )
         elif upd == 'week_day':
             opts = [
@@ -301,4 +308,7 @@ class ButtonManager:
             )
         if current_menu not in menu_history:
             menu_history.append(current_menu)
+        print()
+        print(f'upd={upd}')
+        print()
         self.current_updater.operation(query.message, None, user_info)
