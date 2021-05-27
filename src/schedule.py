@@ -131,12 +131,41 @@ class Schedule:
 
 
     def teacher_info(self, user: User):
+        id_ = user.teacher_id
         row = next(self.sql_conn.execute(
             f"""SELECT FIRSTNAME, LASTNAME
                FROM TEACHER
-               WHERE TEACHER_ID = {user.teacher_id}"""
+               WHERE TEACHER_ID = {id_}"""
         ))
-        return f'Info about {row[0]} {row[1]}'#TODO
+        result =  f'{row[0]} {row[1]}' + '\n'
+        rows = self.sql_conn.execute(
+            f"""SELECT NAME,
+                      LECTURER_ID,
+                      INSTRUCTOR1_ID,
+                      INSTRUCTOR2_ID
+            FROM CLASS
+            WHERE LECTURER_ID = {id_} OR
+                  INSTRUCTOR1_ID = {id_} OR
+                  INSTRUCTOR2_ID = {id_}"""
+        )
+
+        for row in rows:
+            subresult = ''
+            classname = row[0]
+            lecturer_id = row[1]
+            ins1_id = row[2]
+            ins2_id = row[3]
+
+            if lecturer_id == id_:
+                subresult += 'is lecturer'
+            if ins1_id == id_ or ins2_id == id_:
+                if subresult != '':
+                    subresult += ' and instructor'
+                else:
+                    subresult += 'is instructor'
+            subresult += f' for "{classname}"'
+            result += subresult + '\n'
+        return result
 
 
     def class_info(self, user: User):
