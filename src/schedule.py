@@ -280,4 +280,7 @@ class Schedule:
             if subgroup is None:
                 result += f'(subgroup: {subgr})'
             result += '\n'
-        return result
+        if result != '':
+            return result
+        else:
+            return 'NO STUDENTS FOUND'
