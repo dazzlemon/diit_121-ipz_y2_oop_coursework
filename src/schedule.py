@@ -3,7 +3,6 @@ Read only manager for schedule database
 """
 from itertools import cycle, dropwhile, takewhile
 from sqlite3   import Connection
-from user      import User
 
 class Schedule:
     """
@@ -130,8 +129,8 @@ class Schedule:
                         )
 
 
-    def teacher_info(self, user: User):
-        id_ = user.teacher_id
+    def teacher_info(self, id_):
+        """Stringified info about teacher by their id"""
         row = next(self.sql_conn.execute(
             f"""SELECT FIRSTNAME, LASTNAME
                FROM TEACHER
@@ -168,5 +167,6 @@ class Schedule:
         return result
 
 
-    def class_info(self, user: User):
-        return f'info about class with id={user.class_id}'#TODO
+    def class_info(self, id_):
+        """Stringified info about class by id"""
+        return f'info about class with id={id_}'#TODO

@@ -21,9 +21,9 @@ class ButtonManager:
     """
     def __init__(self, user_db: Connection, schedule_db: Connection):
         self.user_db = UserDbManager(user_db)
+        self.schedule = Schedule(schedule_db)
         self.schedule_db = schedule_db
         self.current_updater = None
-        self.schedule = Schedule(schedule_db)
         self.main_menu = ListMenu('Menu', 'menu')
 
         # main_menu init
@@ -146,6 +146,16 @@ class ButtonManager:
                 is_odd_week
             )
         return week_sch
+
+
+    def teacher_info(self, user: User):
+        """wrapper for schedule.teacher_info(user.teacher_id)"""
+        return self.schedule.teacher_info(user.teacher_id)
+
+
+    def class_info(self, user: User):
+        """wrapper for schedule.teacher_info(user.class_id)"""
+        return self.schedule.class_info(user.class_id)
 
 
     def print_main_menu(self, message: Message):
