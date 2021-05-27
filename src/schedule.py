@@ -129,6 +129,11 @@ class Schedule:
                         )
 
 
+    def current_class(self, day: int, hour: int, minute: int, is_odd_week=None):
+        #TODO
+        pass
+
+
     def teacher_info(self, id_):
         """Stringified info about teacher by their id"""
         row = next(self.sql_conn.execute(
@@ -171,6 +176,7 @@ class Schedule:
         """Stringified info about class by id"""
         return f'info about class with id={id_}'#TODO
 
-    
+
     def group_list(self, id_, subgroup):
-            return f'group {id_}'
+        #TODO
+        return f'group {id_}'
