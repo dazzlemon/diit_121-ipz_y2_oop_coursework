@@ -130,6 +130,7 @@ class Schedule:
                                 is_lecture_str
                             ) + f'on {self.day_from_int(day_)}, at {time}'
                         )
+        return f'There is no schedule for {group_id}!'
 
 
     def current_class(
