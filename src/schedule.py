@@ -1,6 +1,7 @@
 """
 Read only manager for schedule database
 """
+import datetime
 from itertools import cycle, dropwhile, takewhile
 from sqlite3   import Connection
 
@@ -134,8 +135,38 @@ class Schedule:
     def current_class(
         self, day: int, hour: int, minute: int, group_id: int, is_odd_week=None
     ):
-        """returns stringified info about current class"""
-        #TODO
+        """returns stringified info about current class
+        day, hour, minute is <current_time>"""
+        if 1 <= day <= 7:
+            for row in self._day_schedule(day, group_id, is_odd_week):
+                time = row[0]
+                is_lecture = row[1]
+                class_id = row[2]
+
+                time_hour, time_min = time.split(':')
+                time_hour = int(time_hour)
+                time_min = int(time_min)
+
+                time_now = datetime.time(hour, minute)
+                time_class_start = datetime.time(time_hour, time_min)
+                time_class_finish = time_class_start + datetime.timedelta(
+                    minutes=80
+                )
+
+                if time_class_start < time_now < time_class_finish:
+                    classname = next(
+                        self.sql_conn.execute(
+                            'SELECT NAME from CLASS where CLASS_ID = '
+                            + str(class_id)
+                        )
+                    )[0]
+
+                    is_lecture_str = "lecture" if is_lecture else "practice"
+
+                    return ('Your next current class is %s(%s)\n' % (
+                            classname,is_lecture_str
+                    ))
+            return "You don't have a class rigth now"
 
 
     def teacher_info(self, id_):
