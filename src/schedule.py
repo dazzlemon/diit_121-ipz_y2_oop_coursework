@@ -177,7 +177,25 @@ class Schedule:
         return f'info about class with id={id_}'#TODO
 
 
-    def group_list(self, id_, subgroup):
+    def group_list(self, id_: int, subgroup: int=None):
         """stringified list group"""
-        #TODO
-        return f'group {id_}'
+        subgroup_constraint = ''
+        if subgroup is not None:
+            subgroup_constraint = f' AND SUBGROUP = {subgroup}'
+        rows = self.sql_conn.execute(
+            f"""SELECT FIRSTNAME,
+                       LASTNAME,
+                       SUBGROUP
+                FROM STUDENT
+                WHERE GROUP_ID = {id_}""" + subgroup_constraint)
+
+        result = ''
+        for row in rows:
+            name = row[0] + ' ' + row[1]
+            subgr = row[2]
+
+            result += name
+            if subgroup is None:
+                result += f'(subgroup: {subgr})'
+            result += '\n'
+        return result
