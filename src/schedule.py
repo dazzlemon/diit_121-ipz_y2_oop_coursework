@@ -86,7 +86,9 @@ class Schedule:
         return days[day]
 
 
-    def next_class(self, day: int, hour: int, minute: int, is_odd_week=None):
+    def next_class(
+        self, day: int, hour: int, minute: int, group_id, is_odd_week=None
+    ):
         """day, hour, minute is <current_time>"""
         if 1 <= day <= 7:
             counter = 0
@@ -100,7 +102,7 @@ class Schedule:
                 dropwhile(lambda n: n < day, cycle(range(1, 8)))
             ):
                 # check one week forward(8th day is the same as today)
-                for row in self._day_schedule(day_, is_odd_week):
+                for row in self._day_schedule(day_, group_id, is_odd_week):
                     time = row[0]
                     is_lecture = row[1]
                     class_id = row[2]
@@ -129,7 +131,9 @@ class Schedule:
                         )
 
 
-    def current_class(self, day: int, hour: int, minute: int, is_odd_week=None):
+    def current_class(
+        self, day: int, hour: int, minute: int, group_id: int, is_odd_week=None
+    ):
         """returns stringified info about current class"""
         #TODO
 

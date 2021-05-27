@@ -107,10 +107,12 @@ class ButtonManager:
 
         # main_menu.class_menu init
         self.current_class_button = LeafButton(
-            'Current class', 'curr_class', self.class_menu
+            'Current class', 'curr_class', self.class_menu,
+            self.current_class, 'group_id'
         )
         self.current_class_button = LeafButton(
-            'Next class', 'next_class', self.class_menu
+            'Next class', 'next_class', self.class_menu,
+            self.next_class, 'group_id'
         )
 
 
@@ -178,6 +180,30 @@ class ButtonManager:
         def gr_ls(user):
             return self.schedule.group_list(user.group_id, subgroup)
         return gr_ls
+
+
+    def current_class(self, user: User):
+        """wrapper"""
+        now = datetime.datetime.now()
+        return self.schedule.current_class(
+            now.weekday() + 1,
+            now.hour,
+            now.minute,
+            user.group_id,
+            now.isocalendar().week % 2 == 1
+        )
+
+
+    def next_class(self, user: User):
+        """wrapper"""
+        now = datetime.datetime.now()
+        return self.schedule.next_class(
+            now.weekday() + 1,
+            now.hour,
+            now.minute,
+            user.group_id,
+            now.isocalendar().week % 2 == 1
+        )
 
 
     def print_main_menu(self, message: Message):
