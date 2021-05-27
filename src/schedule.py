@@ -170,3 +170,7 @@ class Schedule:
     def class_info(self, id_):
         """Stringified info about class by id"""
         return f'info about class with id={id_}'#TODO
+
+    
+    def group_list(self, id_, subgroup):
+            return f'group {id_}'

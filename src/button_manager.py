@@ -33,13 +33,17 @@ class ButtonManager:
         self.main_menu.next_row()
         self.group_menu = ListMenu('Group', 'group', self.main_menu)
         self.main_menu.next_row()
+        self.class_menu = ListMenu(
+            'Class schedule', 'class_sch', self.main_menu
+        )
+        self.main_menu.next_row()
         self.teacher_menu = LeafButton(
-            'Teacher info', 'teacher', self.main_menu,
+            'Teacher info', 'teacher_info', self.main_menu,
             self.schedule.teacher_info, 'teacher_id'
         )
         self.main_menu.next_row()
         self.student_menu = LeafButton(
-            'Class info', 'class', self.main_menu,
+            'Class info', 'class_info', self.main_menu,
             self.schedule.class_info, 'class_id'
         )
         self.main_menu.next_row()
@@ -89,13 +93,24 @@ class ButtonManager:
 
         # main_menu.group_menu init
         self.all_students_button = LeafButton(
-            'All Students', 'all_students', self.group_menu
+            'All Students', 'all_students', self.group_menu,
+            self.group_list(None), 'group_id'
         )
         self.subgroup1_button = LeafButton(
-            'Subgroup1', 'subgroup1', self.group_menu
+            'Subgroup1', 'subgroup1', self.group_menu,
+            self.group_list(1), 'group_id'
         )
         self.subgroup2_button = LeafButton(
-            'Subgroup2', 'subgroup2', self.group_menu
+            'Subgroup2', 'subgroup2', self.group_menu,
+            self.group_list(2), 'group_id'
+        )
+
+        # main_menu.class_menu init
+        self.current_class_button = LeafButton(
+            'Current class', 'curr_class', self.class_menu
+        )
+        self.current_class_button = LeafButton(
+            'Next class', 'next_class', self.class_menu
         )
 
 
@@ -156,6 +171,12 @@ class ButtonManager:
     def class_info(self, user: User):
         """wrapper for schedule.teacher_info(user.class_id)"""
         return self.schedule.class_info(user.class_id)
+
+
+    def group_list(self, subgroup: int):
+        def gr_ls(user):
+            return self.schedule.group_list(user.group_id, subgroup)
+        return gr_ls
 
 
     def print_main_menu(self, message: Message):
