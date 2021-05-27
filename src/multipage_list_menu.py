@@ -30,7 +30,7 @@ class MultiPageListMenu(MultiPageMenu):
 
     def _add_page_nav_buttons(self, keyboard: List[List[InlineKeyboardButton]]):
         if len(self.options) > self.options_per_page:
-            super()._add_nav_buttons(keyboard)
+            super()._add_page_nav_buttons(keyboard)
 
 
     def keyboard(self) -> List[List[InlineKeyboardButton]]:
