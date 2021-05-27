@@ -39,12 +39,12 @@ class ButtonManager:
         self.main_menu.next_row()
         self.teacher_menu = LeafButton(
             'Teacher info', 'teacher_info', self.main_menu,
-            self.schedule.teacher_info, 'teacher_id'
+            self.teacher_info, 'teacher_id'
         )
         self.main_menu.next_row()
         self.student_menu = LeafButton(
             'Class info', 'class_info', self.main_menu,
-            self.schedule.class_info, 'class_id'
+            self.class_info, 'class_id'
         )
         self.main_menu.next_row()
 
@@ -335,8 +335,6 @@ class ButtonManager:
             self.current_updater = MultiPageListMenu(
                 opts, upd.upper(), callback, True
             )
-        elif upd == 'student_id':
-            pass# TODO
         elif upd == 'calendar_day':
             today = datetime.date.today()
             next_year = datetime.date(today.year + 1, today.month, today.day)
@@ -356,6 +354,8 @@ class ButtonManager:
             self.current_updater = MultiPageListMenu(
                 opts, upd.upper(), callback, True
             )
+        elif upd == 'class_id':
+            pass
         if current_menu not in menu_history:
             menu_history.append(current_menu)
         print()

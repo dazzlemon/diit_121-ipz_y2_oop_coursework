@@ -73,10 +73,9 @@ class UserDbManager:
         """returns user by their id"""
         row = next(self.sql_conn.execute("""SELECT GROUP_ID,
                                               TEACHER_ID,
-                                              STUDENT_ID,
                                               CALENDAR_DAY,
                                               WEEK_DAY
                                   FROM USER
                                   WHERE ID = %s""" % id_
         ))
-        return User(row[0], row[1], row[2], row[3], row[4])
+        return User(row[0], row[1], row[2], row[3])

@@ -12,7 +12,6 @@ class User:
     """
     group_id: int
     teacher_id: int
-    student_id: int
     calendar_day: str
     week_day: int
 
