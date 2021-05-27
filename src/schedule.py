@@ -209,7 +209,54 @@ class Schedule:
 
     def class_info(self, id_):
         """Stringified info about class by id"""
-        return f'info about class with id={id_}'#TODO
+        row = next(self.sql_conn.execute(
+            f"""SELECT NAME,
+                      LECTURER_ID,
+                      INSTRUCTOR1_ID,
+                      INSTRUCTOR2_ID,
+                      LECTURE_ROOM_ID,
+                      ROOM1_ID,
+                      ROOM2_ID
+            FROM CLASS
+            WHERE CLASS_ID = {id_}"""
+        ))
+        name = row[0]
+        lecturer_id = row[1]
+        ins1_id = row[2]
+        ins2_id = row[3]
+        lec_room = row[4]
+        room1 = row[5]
+        room2 = row[6]
+
+        lecturer = next(self.sql_conn.execute(
+            f"""SELECT FIRSTNAME, LASTNAME
+            FROM TEACHER
+            WHERE TEACHER_ID = {lecturer_id}"""
+        ))
+        ins1 = next(self.sql_conn.execute(
+            f"""SELECT FIRSTNAME, LASTNAME
+            FROM TEACHER
+            WHERE TEACHER_ID = {ins1_id}"""
+        ))
+        ins2 = None
+        if ins2_id is not None:
+            ins2 = next(self.sql_conn.execute(
+                f"""SELECT FIRSTNAME, LASTNAME
+                FROM TEACHER
+                WHERE TEACHER_ID = {ins2_id}"""
+            ))
+
+        result = ''
+        result += name + '\n'
+        result += f'lecturer: {lecturer[0]} {lecturer[1]}' + '\n'
+        result += f'instructor 1: {ins1[0]} {ins1[1]}' + '\n'
+        if ins2 is not None:
+            result += f'instructor 2: {ins2[0]} {ins2[1]}' + '\n'
+        result += f'lecture room: {lec_room}' + '\n'
+        result += f'room 1: {room1}' + '\n'
+        if room2 is not None:
+            result += f'room 2: {room2}' + '\n'
+        return result
 
 
     def group_list(self, id_: int, subgroup: int=None):
